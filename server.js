@@ -5,6 +5,7 @@ const cors = require('cors');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const OpenAI = require('openai');
+const { check, validationResult } = require('express-validator');
 
 const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANON_KEY);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -107,7 +108,14 @@ app.get('/api/quiz/agile', async (req, res) => {
     res.json({ questions });
 });
 
-app.post('/api/signup', async (req, res) => {
+app.post('/api/signup', [
+    check('email').isEmail().withMessage('Invalid email format'),
+    check('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+],async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array() });
+    }
     const { email, password } = req.body;
     const { user, error } = await supabase.auth.signUp({
         email,
@@ -121,7 +129,14 @@ app.post('/api/signup', async (req, res) => {
     res.json({ user, error });
 });
 
-app.post('/api/signin', async (req, res) => {
+app.post('/api/signin', [
+    check('email').isEmail().withMessage('Invalid email format'),
+    check('password').exists().withMessage('Password is required'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array() });
+    }
     const { email, password } = req.body;
 
     const { user, error } = await supabase.auth.signIn({
