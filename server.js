@@ -151,6 +151,16 @@ app.post('/api/signin', [
     res.json({ user, token: session.access_token });
 });
 
+app.post('/api/logout', async (req, res) => {
+    const { error } = await supabase.auth.signOut();
+
+    if(error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+    res.json({ message: 'Logged out successful' });
+});
+
 const isAuthenticated = async (req, res, next) => {
     const token = req.headers.token;
     const { data, error } = await supabase.auth.api.getUser(token);
