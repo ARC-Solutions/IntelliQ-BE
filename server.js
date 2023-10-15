@@ -38,6 +38,7 @@ app.get('/', async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API!');
 });
 
+//TODO: Prisma User & Quiz
 
 const port = process.env.PORT || 3000;
 const startServer = async () => {
