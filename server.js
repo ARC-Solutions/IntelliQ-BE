@@ -84,6 +84,12 @@ app.get('/api/quiz/anime', async (req, res) => {
     res.json({ questions });
 });
 
+app.get('/api/quiz/js', async (req, res) => {
+    const questions = await generateQuizQuestions('javascript', 4);
+    res.json({ questions });
+});
+
+
 app.get('/api/quiz/gaming', async (req, res) => {
     const questions = await generateQuizQuestions('gaming', 4);
     res.json({ questions });
@@ -91,6 +97,11 @@ app.get('/api/quiz/gaming', async (req, res) => {
 
 app.get('/api/quiz/css', async (req, res) => {
     const questions = await generateQuizQuestions('css', 4);
+    res.json({ questions });
+});
+
+app.get('/api/quiz/agile', async (req, res) => {
+    const questions = await generateQuizQuestions('agile-management', 4);
     res.json({ questions });
 });
 
