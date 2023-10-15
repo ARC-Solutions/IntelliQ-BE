@@ -79,6 +79,11 @@ app.get('/api/quiz/formula-one', async (req, res) => {
     res.json({ questions });
 });
 
+app.get('/api/quiz/anime', async (req, res) => {
+    const questions = await generateQuizQuestions('anime', 4);
+    res.json({ questions });
+});
+
 const startServer = async () => {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
