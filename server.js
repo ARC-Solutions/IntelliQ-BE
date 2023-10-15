@@ -164,6 +164,14 @@ const isAuthenticated = async (req, res, next) => {
     next();
 };
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+
+    const message = err.message || 'Internal Server Error';
+
+    res.status(err.status || 500).json({ error: message });
+});
+
 const startServer = async () => {
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
