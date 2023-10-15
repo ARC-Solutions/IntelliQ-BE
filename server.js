@@ -148,16 +148,15 @@ app.post('/api/signin', [
         return res.status(400).json({ error: error.message });
     }
 
-    res.json({ user });
+    res.json({ user, token: session.access_token });
 });
 
 const isAuthenticated = async (req, res, next) => {
     const token = req.headers.token;
-
     const { data, error } = await supabase.auth.api.getUser(token);
 
     if (error) {
-        return res.status(401).json({ error: error.message });
+        return res.status(401).json({ error: 'Not authenticated' });
     }
 
     req.user = data;
