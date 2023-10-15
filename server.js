@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -5,6 +6,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const OpenAI = require('openai');
 
+const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANON_KEY);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const app = express();
 
@@ -104,6 +106,48 @@ app.get('/api/quiz/agile', async (req, res) => {
     const questions = await generateQuizQuestions('agile-management', 4);
     res.json({ questions });
 });
+
+app.post('/api/signup', async (req, res) => {
+    const { email, password } = req.body;
+    const { user, error } = await supabase.auth.signUp({
+        email,
+        password,
+    });
+
+    if(error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+    res.json({ user, error });
+});
+
+app.post('/api/signin', async (req, res) => {
+    const { email, password } = req.body;
+
+    const { user, error } = await supabase.auth.signIn({
+        email,
+        password
+    });
+
+    if (error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+    res.json({ user });
+});
+
+const isAuthenticated = async (req, res, next) => {
+    const token = req.headers.token;
+
+    const { data, error } = await supabase.auth.api.getUser(token);
+
+    if (error) {
+        return res.status(401).json({ error: error.message });
+    }
+
+    req.user = data;
+    next();
+};
 
 const startServer = async () => {
     const port = process.env.PORT || 3000;
