@@ -8,11 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      database_anon_key: ${{ secrets.DATABASE_ANON_KEY }}
-      database_url: ${{ secrets.DATABASE_URL }}
-      openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-      supabaseUrl: ${{ secrets.SUPABASE_URL }}
 
     steps:
       - name: 'Checkout GitHub Action'
@@ -26,7 +21,9 @@ jobs:
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           package: .
-
-      - name: 'Debug env'
-        run: echo "supabaseUrl= ${{ secrets.SUPABASE_URL }} database_url= ${{ secrets.DATABASE_URL }} database_anon_key= ${{ secrets.DATABASE_ANON_KEY }} openai_api_key= ${{ secrets.OPENAI_API_KEY }}"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: 'Debug: Echo DATABASE_URL'
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"
