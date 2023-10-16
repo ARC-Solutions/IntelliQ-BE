@@ -408,11 +408,11 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
     const port = process.env.PORT || 3000;
+    configureMiddlewares();
+    configureSwagger();
     app.listen(port, () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
 };
 
-configureMiddlewares();
-configureSwagger();
 startServer().catch(e => console.error(e));
