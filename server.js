@@ -22,7 +22,7 @@ const configureSwagger = () => {
         swaggerDefinition: {
             info: {
                 title: 'IntelliQ-BE API',
-                version: '2.0.0',
+                version: '3.0.1',
                 description: 'API for IntelliQ-BE',
             },
         },
@@ -79,44 +79,255 @@ const generateQuizQuestions = async (interests, numberOfQuestions) => {
  *       description: 'Returns a welcome message.'
  *       responses:
  *         200:
- *           description: 'Welcome to the Movies API!'
+ *           description: 'Welcome to the IntelliQ-BE API!'
  */
 app.get('/api/welcome', async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API!');
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a custom quiz'
+ *       description: 'This endpoint returns a number of quiz questions targeted to user interests.'
+ *       parameters:
+ *         - in: 'query'
+ *           name: 'numberOfQuestions'
+ *           required: true
+ *           type: 'integer'
+ *         - in: 'query'
+ *           name: 'interests'
+ *           required: true
+ *           type: 'string'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz', async (req, res) => {
     const { interests, numberOfQuestions } = req.query;
     const questions = await generateQuizQuestions(interests, numberOfQuestions);
     res.json({ questions });
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/formula-one:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about formula one'
+ *       description: 'This endpoint returns 4 quiz questions about Formula One'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/formula-one', async (req, res) => {
     const questions = await generateQuizQuestions('formula-one', 4);
     res.json({ questions });
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/anime:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about anime'
+ *       description: 'This endpoint returns 4 quiz questions about Anime'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/anime', async (req, res) => {
     const questions = await generateQuizQuestions('anime', 4);
     res.json({ questions });
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/js:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about javascript'
+ *       description: 'This endpoint returns 4 quiz questions about JavaScript'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/js', async (req, res) => {
     const questions = await generateQuizQuestions('javascript', 4);
     res.json({ questions });
 });
 
-
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/gaming:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about gaming'
+ *       description: 'This endpoint returns 4 quiz questions about Gaming'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/gaming', async (req, res) => {
     const questions = await generateQuizQuestions('gaming', 4);
     res.json({ questions });
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/css:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about css'
+ *       description: 'This endpoint returns 4 quiz questions about CSS'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/css', async (req, res) => {
     const questions = await generateQuizQuestions('css', 4);
     res.json({ questions });
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /api/quiz/agile:
+ *     get:
+ *       tags:
+ *         - Quizes
+ *       summary: 'Get a quiz about Agile Management'
+ *       description: 'This endpoint returns 4 quiz questions about Agile Maagement'
+ *       responses:
+ *         200:
+ *           description: 'Successful operation'
+ *           schema:
+ *             type: 'object'
+ *             properties:
+ *               questions:
+ *                 type: 'array'
+ *                 items:
+ *                   type: 'object'
+ *                   properties:
+ *                     text:
+ *                       type: 'string'
+ *                     options:
+ *                       type: 'array'
+ *                       items:
+ *                         type: 'string'
+ *                     correctAnswer:
+ *                       type: 'string'
+ */
 app.get('/api/quiz/agile', async (req, res) => {
     const questions = await generateQuizQuestions('agile-management', 4);
     res.json({ questions });
