@@ -10,7 +10,7 @@ import { check, validationResult } from 'express-validator';
 
 const dbURL = process.env.SUPABASE_URL;
 const annonKEY = process.env.DATABASE_ANON_KEY;
-const supabase = createClient(dbURL, annonKEY);
+// const supabase = createClient(dbURL, annonKEY);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const app = express();
 
