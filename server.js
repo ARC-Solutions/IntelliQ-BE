@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-const OpenAI = require('openai');
-const { check, validationResult } = require('express-validator');
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import OpenAI from 'openai';
+import { check, validationResult } from 'express-validator';
 
 const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANON_KEY);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -67,6 +68,19 @@ const generateQuizQuestions = async (interests, numberOfQuestions) => {
     });
 };
 
+/**
+ * @swagger
+ * paths:
+ *   /:
+ *     get:
+ *       tags:
+ *         - General
+ *       summary: 'Welcome endpoint'
+ *       description: 'Returns a welcome message.'
+ *       responses:
+ *         200:
+ *           description: 'Welcome to the Movies API!'
+ */
 app.get('/api/welcome', async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API!');
 });
