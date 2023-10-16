@@ -84,7 +84,7 @@ const generateQuizQuestions = async (interests, numberOfQuestions) => {
  *           description: 'Welcome to the IntelliQ-BE API!'
  */
 app.get('/api/welcome', async (req, res) => {
-    res.send(process.env.DATABASE_URL);
+    res.json('Welcome to the IntelliQ-BE API!');
 });
 
 /**
