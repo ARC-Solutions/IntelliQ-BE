@@ -73,7 +73,7 @@ const generateQuizQuestions = async (interests, numberOfQuestions) => {
 /**
  * @swagger
  * paths:
- *   /:
+ *   /api/welcome:
  *     get:
  *       tags:
  *         - General
