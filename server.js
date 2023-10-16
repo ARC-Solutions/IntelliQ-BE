@@ -414,6 +414,7 @@ const startServer = async () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
 };
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 
 configureMiddlewares();
 configureSwagger();
