@@ -32,3 +32,6 @@ jobs:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           supabase_url: ${{ secrets.SUPABASE_URL }}
 
+      - name: 'Debug env'
+        run: echo "supabase_url= ${{ secrets.SUPABASE_URL }}"
+
