@@ -84,7 +84,7 @@ const generateQuizQuestions = async (interests, numberOfQuestions) => {
  *           description: 'Welcome to the IntelliQ-BE API!'
  */
 app.get('/api/welcome', async (req, res) => {
-    res.send('Welcome to the IntelliQ-BE API!');
+    res.send('SUPABASE_URL:', process.env.SUPABASE_URL);
 });
 
 /**
@@ -414,8 +414,6 @@ const startServer = async () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
 };
-console.log('SHOULD BE SEEN ON AZURE');
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 
 configureMiddlewares();
 configureSwagger();
