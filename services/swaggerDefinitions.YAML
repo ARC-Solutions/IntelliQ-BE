@@ -1,0 +1,210 @@
+openapi: '3.0.0'
+info:
+  title: 'IntelliQ-BE API'
+  description: 'This is the IntelliQ-BE API documentation for the IntelliQ-BE API.'
+  version: 3.1.2
+
+servers:
+  - url: https://intelliq-be.azurewebsites.net/
+    description: 'Production server'
+  - url: http://localhost:3000/
+    description: 'Development server'
+
+
+paths:
+  /api/welcome:
+    get:
+      tags:
+        - General
+      summary: 'Welcome endpoint'
+      description: 'Returns a welcome message'
+      responses:
+        200:
+          description: 'Welcome to the IntelliQ-BE API'
+          schema:
+            type: string
+            example: 'Welcome to the IntelliQ-BE API'
+  /api/quiz:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a custom quiz'
+      description: 'This endpoint returns a number of quiz questions targeted to user interests.'
+      parameters:
+        - in: 'query'
+          name: 'numberOfQuestions'
+          required: true
+          type: 'integer'
+        - in: 'query'
+          name: 'interests'
+          required: true
+          type: 'string'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/formula-one:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about formula one'
+      description: 'This endpoint returns 4 quiz questions about Formula One'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/anime:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about anime'
+      description: 'This endpoint returns 4 quiz questions about Anime'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/js:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about javascript'
+      description: 'This endpoint returns 4 quiz questions about JavaScript'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/gaming:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about gaming'
+      description: 'This endpoint returns 4 quiz questions about Gaming'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/css:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about css'
+      description: 'This endpoint returns 4 quiz questions about CSS'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'
+  /api/quiz/agile:
+    get:
+      tags:
+        - Quizzes
+      summary: 'Get a quiz about Agile Management'
+      description: 'This endpoint returns 4 quiz questions about Agile Management'
+      responses:
+        200:
+          description: 'Successful operation'
+          schema:
+            type: 'object'
+            properties:
+              questions:
+                type: 'array'
+                items:
+                  type: 'object'
+                  properties:
+                    text:
+                      type: 'string'
+                    options:
+                      type: 'array'
+                      items:
+                        type: 'string'
+                    correctAnswer:
+                      type: 'string'

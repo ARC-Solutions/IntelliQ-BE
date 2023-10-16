@@ -2,7 +2,7 @@
   "name": "intelliq-be",
   "version": "1.0.0",
   "description": "IntelliQ-BE",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +19,7 @@
     "nodemon": "^3.0.1",
     "openai": "^4.12.1",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
   }
 }
