@@ -24,14 +24,14 @@ jobs:
           database_anon_key: ${{ secrets.DATABASE_ANON_KEY }}
           database_url: ${{ secrets.DATABASE_URL }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          supabase_url: ${{ secrets.SUPABASE_URL }}
+          supabaseUrl: ${{ secrets.SUPABASE_URL }}
           package: .
         env:
           database_anon_key: ${{ secrets.DATABASE_ANON_KEY }}
           database_url: ${{ secrets.DATABASE_URL }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          supabase_url: ${{ secrets.SUPABASE_URL }}
+          supabaseUrl: ${{ secrets.SUPABASE_URL }}
 
       - name: 'Debug env'
-        run: echo "supabase_url= ${{ secrets.SUPABASE_URL }}"
+        run: echo "supabaseUrl= ${{ secrets.SUPABASE_URL }}"
 
