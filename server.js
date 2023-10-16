@@ -8,7 +8,9 @@ import swaggerUi from 'swagger-ui-express';
 import OpenAI from 'openai';
 import { check, validationResult } from 'express-validator';
 
-const supabase = createClient(process.env.DATABASE_URL, process.env.DATABASE_ANON_KEY);
+const dbURL = process.env.DATABASE_URL;
+const annonKEY = process.env.DATABASE_ANON_KEY;
+const supabase = createClient(dbURL, annonKEY);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const app = express();
 
@@ -408,11 +410,11 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
     const port = process.env.PORT || 3000;
-    configureMiddlewares();
-    configureSwagger();
     app.listen(port, () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
 };
 
+configureMiddlewares();
+configureSwagger();
 startServer().catch(e => console.error(e));
