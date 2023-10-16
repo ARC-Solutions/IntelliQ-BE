@@ -414,6 +414,7 @@ const startServer = async () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
 };
+console.log('SHOULD BE SEEN ON AZURE');
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 
 configureMiddlewares();
