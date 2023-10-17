@@ -1,7 +1,7 @@
 import { generateQuizQuestions } from "../services/quizService.js";
 
 export const welcome =  async (req, res) => {
-    res.json('Welcome to the IntelliQ-BE API!');
+    res.send('Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/');
 };
 
 export const getQuiz = async (req, res) => {

@@ -1,7 +1,7 @@
 import { welcome, getQuiz, getJSQuiz, getAgileQuiz, getAnimeQuiz, getGamingQuiz, getFormulaOneQuiz, getCSSQuiz } from '../controllers/quizController.js';
 
 export default (app) => {
-    app.get('/api/welcome', welcome);
+    app.get('/', welcome);
     app.get('/api/quiz', getQuiz);
     app.get('/api/quiz/javascript', getJSQuiz);
     app.get('/api/quiz/agile', getAgileQuiz);
