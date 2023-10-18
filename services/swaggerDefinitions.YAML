@@ -24,8 +24,72 @@ paths:
           schema:
             type: string
             example: 'Welcome to the IntelliQ-BE API'
+  /api/signup:
+    post:
+      tags:
+        - User
+      summary: 'Create User Endpoint'
+      description: 'The user needs to sign up before being able to use the App.'
+      operationId: 'registerUser'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User details for registration'
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: 'Email for the new user'
+              password:
+                type: string
+                description: 'Password for the new user'
+            example:
+              email: 'newUser@user.com'
+              password: 'newPassword'
+      responses:
+        200:
+          description: 'Returns user auth data'
+  /api/signin:
+    post:
+      tags:
+        - User
+      summary: 'Get User Access Token Endpoint'
+      description: 'The user needs to sign in after one hour before being able to use the App.'
+      operationId: 'loginUser'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User details for logging in'
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: 'Email for an existing user'
+              password:
+                type: string
+                description: 'Password for an existing user'
+            example:
+              email: 'newUser@user.com'
+              password: 'newPassword'
+      responses:
+        200:
+          description: 'Returns userID, email, sesstionToken'
   /api/quiz:
-    get:
+    post:
+      security:
+        - BearerAuth: []
       tags:
         - Quizzes
       summary: 'Get a custom quiz'
@@ -43,21 +107,26 @@ paths:
         200:
           description: 'Successful operation'
           schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
+            type: 'array'
+            items:
+              type: 'object'
+              properties:
+                id:
+                  type: 'integer'
+                questions:
+                  type: 'array'
+                  items:
+                    type: 'object'
+                    properties:
+                      text:
                         type: 'string'
-                    correctAnswer:
-                      type: 'string'
+                      options:
+                        type: 'array'
+                        items:
+                          type: 'string'
+                      correctAnswer:
+                        type: 'string'
+
   /api/quiz/formula-one:
     get:
       tags:
