@@ -11,9 +11,13 @@ export const getUserSession = async (req, res) => {
 
     if (error || !user) return res.status(401).json({ error: 'Not authorized, invalid token' });
 
+    const userId = user['user']['identities'][0]['user_id'];
+    const email = user['user']['identities'][0]['identity_data']['email'];
+
     res.json({
-        user
-    })
+        userID: userId,
+        email: email,
+    });
 };
 
 export const signup = async (req, res) => {
