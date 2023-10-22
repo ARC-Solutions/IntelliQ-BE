@@ -54,11 +54,16 @@ export const signin = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ error: errors.array() });
     }
-    const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
+    const { email, password, provider } = req.body;
+
+    let data, error;
+
+    if(provider){
+        ({ data, error } = await supabase.auth.signIn({ provider }));
+    }
+    else{
+        ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
+    }
 
     if (error) {
         return res.status(400).json({ error: error.message });
