@@ -62,16 +62,18 @@ export const signin = async (req, res) => {
         ({ data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google'
         }));
+        res.json({ url: data['url'] });
     }
     else{
         ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
+        res.json({ userID:data['user']['id'], email: data['user']['email'], sessionToken:data['session']['access_token'] })
     }
 
     if (error) {
         return res.status(400).json({ error: error.message });
     }
 
-    res.json({ userID:data['user']['id'], email: data['user']['email'], sessionToken:data['session']['access_token']});
+
 };
 
 export const logout = async (req, res) => {
