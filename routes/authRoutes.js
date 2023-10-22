@@ -1,5 +1,5 @@
 import { check } from "express-validator";
-import { signup, signin, logout } from "../controllers/authController.js";
+import { signup, signin, logout, getUserSession } from "../controllers/authController.js";
 
 export default (app) => {
     app.post('/api/signup', [
@@ -11,4 +11,5 @@ export default (app) => {
         check('password').exists().withMessage('Password is required'),
     ], signin);
     app.post('/api/logout', logout);
+    app.get('/api/getUserSession', getUserSession);
 };

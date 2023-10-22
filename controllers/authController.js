@@ -2,6 +2,20 @@ import { validationResult } from "express-validator";
 import { supabase } from "../config/db.js";
 import { prisma } from "../config/prismaClient.js";
 
+export const getUserSession = async (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+
+    if (!token) return res.status(401).json({ error: 'Not authorized, no token provided' });
+
+    const { data: user, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) return res.status(401).json({ error: 'Not authorized, invalid token' });
+
+    res.json({
+        user
+    })
+};
+
 export const signup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
