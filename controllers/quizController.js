@@ -1,5 +1,7 @@
 import { generateQuizQuestions } from "../services/quizService.js";
 import { prisma } from "../config/prismaClient.js";
+import { supabase } from "../config/db.js";
+import {isAuthenticated} from "../middlewares/isAuthenticated.js";
 
 export const welcome =  async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/');
@@ -7,49 +9,98 @@ export const welcome =  async (req, res) => {
 
 export const getQuiz = async (req, res) => {
     const { interests, numberOfQuestions } = req.body;
-    const userPayload = req.user;
+    const token = req.headers.authorization;
+    // console.log("token:", token)
 
-    if (!userPayload || !userPayload.user || !userPayload.user.email) {
+    if (!token) {
         return res.status(403).json({ error: 'Must be signed in' });
     }
 
-    try {
-        const user = await prisma.user.findUnique({
-            where: { email: userPayload.user.email }
-        });
-        if (!user || !user.id) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
-        const validQuestions = rawQuestions.filter(q =>
-            q.text && Array.isArray(q.options) && q.options.length > 0 && q.correctAnswer
-        );
-        if (validQuestions.length === 0) {
-            return res.status(400).json({ error: 'No valid questions received' });
-        }
-        const newQuiz = await prisma.quiz.create({
-            data: {
-                createdBy: { connect: { id: user.id } },
-                topic: interests,
-                questions: {
-                    create: validQuestions.map(q => ({
-                        text: q.text,
-                        options: q.options,  // No .join(",") here if Prisma expects an array
-                        correctAnswer: q.correctAnswer
-                    }))
-                }
-            },
-        });
-        const quizHistory = await prisma.quizHistory.create({
-            data: {
-                user: { connect: { id: user.id } },
-                quiz: { connect: { id: newQuiz.id } },
-                score: 0,
-            },
-        });
+    // let { data: user, error } = await supabase.auth.getUser(token);
 
-        res.json({ rawQuestions, newQuiz, quizHistory });
-    } catch (error) {
+    // if (error) {
+    //     return res.status(403).json({ error: 'Invalid token' });
+    // }
+
+    try {
+        const userId = req.user.user.id;  // Extract userId from req.user
+        const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
+        let isFormatValid = true;
+        let invalidReason = '';
+
+        for (const q of rawQuestions) {
+            if (
+                typeof q.text !== 'string' ||
+                q.text.trim() === '' ||
+                !Array.isArray(q.options) ||
+                q.options.length === 0 ||
+                !q.options.every((option) => typeof option === 'string' && option.trim() !== '') ||
+                typeof q.correctAnswer !== 'string' ||
+                q.correctAnswer.trim() === '' ||
+                !q.options.includes(q.correctAnswer)
+            ) {
+                isFormatValid = false;
+                invalidReason = 'Invalid question format';
+                break;
+            }
+        }
+
+        if (isFormatValid) {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                console.error(`User with ID ${userId} does not exist`);
+                return;
+            }
+
+            const newQuiz = await prisma.quiz.create({
+                data: {
+                    createdById: userId,
+                    topic: interests,
+                    createdAt: new Date(),
+                }
+            });
+
+            if (!newQuiz) {
+                return res.status(500).json({ error: 'Failed to create quiz' });
+            }
+
+            // Insert questions here
+            const insertedQuestions = await prisma.question.createMany({
+                data: rawQuestions.map(q => ({
+                    quizId: newQuiz.id,
+                    text: q.text,
+                    options: q.options,
+                    correctAnswer: q.correctAnswer
+                }))
+            });
+
+            if (!insertedQuestions) {
+                return res.status(500).json({ error: 'Failed to create questions' });
+            }
+
+            const quizHistory = await prisma.quizHistory.create({
+                data: {
+                    userId: userId,
+                    quizId: newQuiz.id,
+                    attemptedAt: new Date(),
+                    score: 0,
+                }
+            });
+
+            if (!quizHistory) {
+                return res.status(500).json({ error: 'Failed to record quiz history' });
+            }
+
+            res.json({ rawQuestions, newQuiz, quizHistory, insertedQuestions });
+        } else {
+            res.status(400).send({ error: invalidReason });
+        }
+
+    }
+    catch (error) {
         console.error("Error in getQuiz:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }

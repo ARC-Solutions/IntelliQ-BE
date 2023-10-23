@@ -1,4 +1,4 @@
-import {check, oneOf} from "express-validator";
+import { check, oneOf } from "express-validator";
 import { signup, signin, logout, getUserSession } from "../controllers/authController.js";
 
 export default (app) => {

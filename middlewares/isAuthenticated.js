@@ -6,7 +6,7 @@ export const isAuthenticated = async (req, res, next) => {
     if (!token) return res.status(401).json({ error: 'Not authorized' });
 
     const { data: user, error } = await supabase.auth.getUser(token);
-
+    //console.log(user);
     if (error || !user) return res.status(401).json({ error: 'Not authorized' });
     req.user = user;
 

@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(uuid())
   email         String        @unique
   password      String? // Null for OAuth users
   oauth_id      String?       @unique // Unique identifier for OAuth
@@ -23,7 +23,7 @@ model User {
 model Quiz {
   id          Int           @id @default(autoincrement())
   createdBy   User          @relation(fields: [createdById], references: [id])
-  createdById Int
+  createdById String // Changed from Int to String
   topic       String
   questions   Question[]
   createdAt   DateTime      @default(now())
@@ -41,7 +41,7 @@ model Question {
 
 model QuizHistory {
   id          Int      @id @default(autoincrement())
-  userId      Int
+  userId      String // Changed from Int to String
   user        User     @relation(fields: [userId], references: [id])
   quizId      Int
   quiz        Quiz     @relation(fields: [quizId], references: [id])

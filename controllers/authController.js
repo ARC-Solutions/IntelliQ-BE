@@ -2,78 +2,62 @@ import { validationResult } from "express-validator";
 import { supabase } from "../config/db.js";
 import { prisma } from "../config/prismaClient.js";
 
-export const getUserSession = async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+const handleErrors = (res, error, statusCode = 400) => {
+    return res.status(statusCode).json({ error: error.message });
+};
 
-    if (!token) return res.status(401).json({ error: 'Not authorized, no token provided' });
+export const getUserSession = async (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) return handleErrors(res, new Error('Not authorized, no token provided'), 401);
 
     const { data: user, error } = await supabase.auth.getUser(token);
 
-    if (error || !user) return res.status(401).json({ error: 'Not authorized, invalid token' });
+    if (error || !user) return handleErrors(res, new Error('Not authorized, invalid token'), 401);
 
-    const userId = user['user']['identities'][0]['user_id'];
-    const email = user['user']['identities'][0]['identity_data']['email'];
+    const userId = user?.user?.identities?.[0]?.user_id ?? 'Unknown';
+    const email = user?.user?.identities?.[0]?.identity_data?.email ?? 'Unknown';
 
-    res.json({
-        userID: userId,
-        email: email,
-    });
+    res.json({ user });
+    // res.json({ userID: userId, email });
 };
 
 export const signup = async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array() });
-    }
+    if (!errors.isEmpty()) return handleErrors(res, new Error(errors.array().join(', ')));
+
     const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-    });
-    if (error) {
-        return res.status(400).json({ error: error.message });
-    }
-    const existingUser = await prisma.user.findUnique({
-        where: { email },
-    });
-    if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' });
-    } else {
-        const newUser = await prisma.user.create({
-            data: {
-                email,
-                password
-            },
-        });
-    }
-    res.json({ data, error: null });
+
+    // Check if user exists before signing up
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+
+    if (existingUser) return handleErrors(res, new Error('User already exists'));
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return handleErrors(res, error);
+
+
+    res.json({ userID: data.user.id, email: data.user.email, sessionToken: data.session.access_token });
 };
 
 export const signin = async (req, res) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array() });
-    }
+    if (!errors.isEmpty()) return handleErrors(res, new Error(errors.array().join(', ')));
+
     const { email, password, provider } = req.body;
 
     let data, error;
 
-    if(provider){
-        ({ data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google'
-        }));
-        res.json({ url: data['url'] });
-    }
-    else{
-        ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
-        res.json({ userID:data['user']['id'], email: data['user']['email'], sessionToken:data['session']['access_token'] })
+    if (provider) {
+        ({ data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' }));
+        if (error) return handleErrors(res, error);
+        return res.json({ url: data.url });
     }
 
-    if (error) {
-        return res.status(400).json({ error: error.message });
-    }
+    ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
+    if (error) return handleErrors(res, error);
 
-
+    res.json({ userID: data.user.id, email: data.user.email, sessionToken: data.session.access_token });
 };
 
 export const logout = async (req, res) => {
