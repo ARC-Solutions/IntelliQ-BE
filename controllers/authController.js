@@ -45,13 +45,13 @@ export const signin = async (req, res) => {
 
     const { email, password, provider } = req.body;
 
+    let data, error;
+
     if (provider) {
         ({ data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' }));
         if (error) return handleErrors(res, error);
         return res.json({ url: data.url });
     }
-
-    let data, error;
 
     ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
     if (error) return handleErrors(res, error);
