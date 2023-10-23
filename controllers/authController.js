@@ -17,7 +17,7 @@ export const getUserSession = async (req, res) => {
 
     const userId = user?.user?.identities?.[0]?.user_id ?? 'Unknown';
     const email = user?.user?.identities?.[0]?.identity_data?.email ?? 'Unknown';
-    
+
     res.json({ userID: userId, email });
 };
 
@@ -43,15 +43,9 @@ export const signin = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return handleErrors(res, new Error(errors.array().join(', ')));
 
-    const { email, password, provider } = req.body;
+    const { email, password } = req.body;
 
     let data, error;
-
-    if (provider) {
-        ({ data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' }));
-        if (error) return handleErrors(res, error);
-        return res.json({ url: data.url });
-    }
 
     ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
     if (error) return handleErrors(res, error);
