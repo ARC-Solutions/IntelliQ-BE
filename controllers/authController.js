@@ -43,7 +43,13 @@ export const signin = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return handleErrors(res, new Error(errors.array().join(', ')));
 
-    const { email, password } = req.body;
+    const { email, password, provider } = req.body;
+
+    if (provider) {
+        ({ data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' }));
+        if (error) return handleErrors(res, error);
+        return res.json({ url: data.url });
+    }
 
     let data, error;
 
