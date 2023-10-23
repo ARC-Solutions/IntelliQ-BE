@@ -17,9 +17,8 @@ export const getUserSession = async (req, res) => {
 
     const userId = user?.user?.identities?.[0]?.user_id ?? 'Unknown';
     const email = user?.user?.identities?.[0]?.identity_data?.email ?? 'Unknown';
-
-    res.json({ user });
-    // res.json({ userID: userId, email });
+    
+    res.json({ userID: userId, email });
 };
 
 export const signup = async (req, res) => {
