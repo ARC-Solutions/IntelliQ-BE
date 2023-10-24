@@ -59,12 +59,13 @@ export const signin = async (req, res) => {
     res.json({ userID: data.user.id, email: data.user.email, sessionToken: data.session.access_token });
 };
 
-export const logout = async (req, res) => {
-    const { error } = await supabase.auth.signOut();
-
-    if(error) {
-        return res.status(400).json({ error: error.message });
-    }
-
-    res.json({ message: 'Logged out successful' });
-};
+// export const logout = async (req, res) => {
+//     const token = req.headers.authorization?.split(' ')[1];
+//     const { error } = await supabase.auth.signOut(token);
+//
+//     if(error) {
+//         return res.status(400).json({ error: error.message });
+//     }
+//
+//     res.json({ message: 'Logged out successful' });
+// };

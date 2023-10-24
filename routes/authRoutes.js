@@ -1,5 +1,5 @@
 import { check, oneOf } from "express-validator";
-import { signup, signin, logout, getUserSession } from "../controllers/authController.js";
+import { signup, signin, getUserSession } from "../controllers/authController.js";
 
 export default (app) => {
     app.post('/api/signup', [
@@ -18,6 +18,6 @@ export default (app) => {
         ]),
 
     ], signin);
-    app.post('/api/logout', logout);
+    // app.post('/api/logout', logout);
     app.get('/api/getUserSession', getUserSession);
 };

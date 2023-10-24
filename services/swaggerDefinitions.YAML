@@ -1,279 +1,379 @@
 openapi: '3.0.0'
 info:
-  title: 'IntelliQ-BE API'
-  description: 'This is the IntelliQ-BE API documentation for the IntelliQ-BE API.'
-  version: 3.1.2
+  title: IntelliQ-BE API
+  description: API Documentation for IntelliQ-BE services.
+  version: '3.1.2'
 
 servers:
   - url: https://intelliq-be.azurewebsites.net/
-    description: 'Production server'
+    description: Production
   - url: http://localhost:3000/
-    description: 'Development server'
+    description: Development
 
+tags:
+  - name: General
+    description: General APIs
+  - name: User
+    description: APIs related to user management
+  - name: Quizzes
+    description: APIs related to quiz management
 
 paths:
   /api/welcome:
     get:
-      tags:
-        - General
-      summary: 'Welcome endpoint'
-      description: 'Returns a welcome message'
+      tags: [General]
+      summary: Retrieve Welcome Message
       responses:
-        200:
-          description: 'Welcome to the IntelliQ-BE API'
-          schema:
-            type: string
-            example: 'Welcome to the IntelliQ-BE API'
+        '200':
+          description: Success
+          content:
+            text/plain:
+              example: Welcome to the IntelliQ-BE API
+
   /api/signup:
     post:
-      tags:
-        - User
-      summary: 'Create User Endpoint'
-      description: 'The user needs to sign up before being able to use the App.'
-      operationId: 'registerUser'
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'User details for registration'
-          required: true
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-                description: 'Email for the new user'
-              password:
-                type: string
-                description: 'Password for the new user'
+      tags: [User]
+      summary: Register New User
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: New user's email
+                password:
+                  type: string
+                  description: New user's password
             example:
-              email: 'newUser@user.com'
-              password: 'newPassword'
+              email: newUser@user.com
+              password: newPassword
       responses:
-        200:
-          description: 'Returns user auth data'
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: string
+                  email:
+                    type: string
+                  sessionToken:
+                    type: string
+        '400':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /api/signin:
     post:
-      tags:
-        - User
-      summary: 'Get User Access Token Endpoint'
-      description: 'The user needs to sign in after one hour before being able to use the App.'
-      operationId: 'loginUser'
-      consumes:
-        - 'application/json'
-      produces:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'body'
-          description: 'User details for logging in'
-          required: true
-          schema:
-            type: object
-            properties:
-              email:
-                type: string
-                description: 'Email for an existing user'
-              password:
-                type: string
-                description: 'Password for an existing user'
-            example:
-              email: 'newUser@user.com'
-              password: 'newPassword'
+      tags: [ User ]
+      summary: User Sign-in
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Existing user's email
+                password:
+                  type: string
+                  description: Existing user's password
+                provider:
+                  type: string
+                  description: Authentication provider (optional)
+              required:
+                - email
+                - password
+              example:
+                email: existingUser@user.com
+                password: existingPassword
+                provider: 'google'
       responses:
-        200:
-          description: 'Returns userID, email, sesstionToken'
+        '200':
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: string
+                  email:
+                    type: string
+                  sessionToken:
+                    type: string
+        '400':
+          description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/getUserSession:
+    get:
+      tags: [ User ]
+      summary: Get User Session
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: User session retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: string
+                  email:
+                    type: string
+        '401':
+          description: Not authorized, invalid token, no token provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /api/quiz:
     post:
+      tags: [ Quizzes ]
+      summary: Retrieve Custom Quiz
       security:
-        - BearerAuth: []
-      tags:
-        - Quizzes
-      summary: 'Get a custom quiz'
-      description: 'This endpoint returns a number of quiz questions targeted to user interests.'
+        - BearerAuth: [ ]
       parameters:
-        - in: 'query'
-          name: 'numberOfQuestions'
+        - name: numberOfQuestions
+          in: query
           required: true
-          type: 'integer'
-        - in: 'query'
-          name: 'interests'
+          schema:
+            type: integer
+        - name: interests
+          in: query
           required: true
-          type: 'string'
-      responses:
-        200:
-          description: 'Successful operation'
           schema:
-            type: 'array'
-            items:
-              type: 'object'
-              properties:
-                id:
-                  type: 'integer'
-                questions:
-                  type: 'array'
-                  items:
-                    type: 'object'
-                    properties:
-                      text:
-                        type: 'string'
-                      options:
-                        type: 'array'
-                        items:
-                          type: 'string'
-                      correctAnswer:
-                        type: 'string'
-
-  /api/quiz/formula-one:
+            type: string
+      responses:
+        '200':
+          description: Custom quiz retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    questions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          options:
+                            type: array
+                            items:
+                              type: string
+                          correctAnswer:
+                            type: string
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Must be signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to create quiz / Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/quiz/javascript:
     get:
       tags:
         - Quizzes
-      summary: 'Get a quiz about formula one'
-      description: 'This endpoint returns 4 quiz questions about Formula One'
+      summary: Retrieve a JavaScript Quiz
       responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
-  /api/quiz/anime:
-    get:
-      tags:
-        - Quizzes
-      summary: 'Get a quiz about anime'
-      description: 'This endpoint returns 4 quiz questions about Anime'
-      responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
-  /api/quiz/js:
-    get:
-      tags:
-        - Quizzes
-      summary: 'Get a quiz about javascript'
-      description: 'This endpoint returns 4 quiz questions about JavaScript'
-      responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
-  /api/quiz/gaming:
-    get:
-      tags:
-        - Quizzes
-      summary: 'Get a quiz about gaming'
-      description: 'This endpoint returns 4 quiz questions about Gaming'
-      responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
-  /api/quiz/css:
-    get:
-      tags:
-        - Quizzes
-      summary: 'Get a quiz about css'
-      description: 'This endpoint returns 4 quiz questions about CSS'
-      responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
-            properties:
-              questions:
-                type: 'array'
-                items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
+        '200':
+          description: Successful retrieval of JavaScript quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /api/quiz/agile:
     get:
       tags:
         - Quizzes
-      summary: 'Get a quiz about Agile Management'
-      description: 'This endpoint returns 4 quiz questions about Agile Management'
+      summary: Retrieve an Agile Management Quiz
       responses:
-        200:
-          description: 'Successful operation'
-          schema:
-            type: 'object'
+        '200':
+          description: Successful retrieval of Agile Management quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/quiz/gaming:
+    get:
+      tags:
+        - Quizzes
+      summary: Retrieve a Gaming Quiz
+      responses:
+        '200':
+          description: Successful retrieval of Gaming quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/quiz/css:
+    get:
+      tags:
+        - Quizzes
+      summary: Retrieve a CSS Quiz
+      responses:
+        '200':
+          description: Successful retrieval of CSS quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/quiz/formula-one:
+    get:
+      tags:
+        - Quizzes
+      summary: Retrieve a Formula One Quiz
+      responses:
+        '200':
+          description: Successful retrieval of Formula One quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/quiz/anime:
+    get:
+      tags:
+        - Quizzes
+      summary: Retrieve an Anime Quiz
+      responses:
+        '200':
+          description: Successful retrieval of Anime quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSchema'
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    QuizSchema:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            type: object
             properties:
-              questions:
-                type: 'array'
+              text:
+                type: string
+              options:
+                type: array
                 items:
-                  type: 'object'
-                  properties:
-                    text:
-                      type: 'string'
-                    options:
-                      type: 'array'
-                      items:
-                        type: 'string'
-                    correctAnswer:
-                      type: 'string'
+                  type: string
+              correctAnswer:
+                type: string
