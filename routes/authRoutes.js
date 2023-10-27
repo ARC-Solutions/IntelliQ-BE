@@ -1,5 +1,5 @@
 import { check } from "express-validator";
-import { signup, login, logout, oAuth, oAuthCallback } from "../controllers/authController.js";
+import {signup, login, logout, oAuth, oAuthCallback, userSession} from "../controllers/authController.js";
 
 export default (app) => {
     app.post('/api/login', [
@@ -13,4 +13,5 @@ export default (app) => {
     app.post('/api/logout', logout);
     app.get('/api/auth/google', oAuth);
     app.get('/api/auth/google/callback', oAuthCallback);
+    app.get('/api/auth/userSession', userSession)
 };
