@@ -8,7 +8,14 @@ import session from "express-session";
 export const configureMiddlewares = (app)=> {
     app.use(express.json());
     app.use(cors({
-        origin: 'http://localhost:3000',
+        origin: function (origin, callback){
+          const allowedOrigins = ['http://localhost:3000', 'https://www.intelliq.arc-solutions.xyz'];
+            if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
     }));
     app.use(cookieParser());
