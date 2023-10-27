@@ -60,7 +60,7 @@ export const login = async (req, res) => {
         if(error) return handleErrors(res, error);
 
         res.cookie('token', session.access_token, {
-            httpOnly: false,
+            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000,  // 1 hour
             sameSite: 'strict'
@@ -107,7 +107,7 @@ export const oAuthCallback = async (req, res) => {
         // Set the token in a cookie
         const { session } = data;
         res.cookie('token', session.access_token, {
-            httpOnly: false,
+            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000,  // 1 hour
             sameSite: 'strict'
