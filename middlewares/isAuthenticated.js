@@ -1,14 +1,24 @@
 import { supabase } from "../config/db.js";
 
 export const isAuthenticated = async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+    // Read from Authorization header
+    const headerToken = req.headers['authorization']?.split(' ')[1];
 
-    if (!token) return res.status(401).json({ error: 'Not authorized' });
+    // Read from cookies
+    const cookieToken = req.cookies?.token;
+
+    // Use the first available token
+    const token = headerToken || cookieToken;
+
+    if (!token) {
+        return res.status(401).json({ error: 'Not authorized' });
+    }
 
     const { data: user, error } = await supabase.auth.getUser(token);
-    //console.log(user);
-    if (error || !user) return res.status(401).json({ error: 'Not authorized' });
-    req.user = user;
+    if (error || !user) {
+        return res.status(401).json({ error: 'Not authorized' });
+    }
 
+    req.user = user;
     next();
 };
