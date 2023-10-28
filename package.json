@@ -4,7 +4,8 @@
   "description": "IntelliQ-BE",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "start": "nodemon ./index.js"
   },
   "type": "module",
   "author": "",
