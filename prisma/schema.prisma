@@ -15,13 +15,12 @@ model user {
   id            String        @id @default(uuid())
   email         String        @unique
   password      String? // Null for OAuth users
-  oauth_id      String?       @unique // Unique identifier for OAuth
   quizzes       quiz[]
   quizHistories quizHistory[]
 }
 
 model quiz {
-  id          Int           @id @default(autoincrement())
+  id          String        @id @default(uuid())
   createdBy   user          @relation(fields: [createdById], references: [id])
   createdById String // Changed from Int to String
   topic       String
@@ -31,8 +30,8 @@ model quiz {
 }
 
 model question {
-  id            Int      @id @default(autoincrement())
-  quizId        Int
+  id            String   @id @default(uuid())
+  quizId        String // Changed from Int to String
   quiz          quiz     @relation(fields: [quizId], references: [id])
   text          String
   options       String[] // Array of options
@@ -40,10 +39,10 @@ model question {
 }
 
 model quizHistory {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   userId      String // Changed from Int to String
   user        user     @relation(fields: [userId], references: [id])
-  quizId      Int
+  quizId      String // Changed from Int to String
   quiz        quiz     @relation(fields: [quizId], references: [id])
   score       Int
   attemptedAt DateTime @default(now())
