@@ -11,40 +11,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id            String        @id @default(uuid())
   email         String        @unique
   password      String? // Null for OAuth users
   oauth_id      String?       @unique // Unique identifier for OAuth
-  quizzes       Quiz[]
-  quizHistories QuizHistory[]
+  quizzes       quiz[]
+  quizHistories quizHistory[]
 }
 
-model Quiz {
+model quiz {
   id          Int           @id @default(autoincrement())
-  createdBy   User          @relation(fields: [createdById], references: [id])
+  createdBy   user          @relation(fields: [createdById], references: [id])
   createdById String // Changed from Int to String
   topic       String
-  questions   Question[]
+  questions   question[]
   createdAt   DateTime      @default(now())
-  histories   QuizHistory[]
+  histories   quizHistory[]
 }
 
-model Question {
+model question {
   id            Int      @id @default(autoincrement())
   quizId        Int
-  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  quiz          quiz     @relation(fields: [quizId], references: [id])
   text          String
   options       String[] // Array of options
   correctAnswer String
 }
 
-model QuizHistory {
+model quizHistory {
   id          Int      @id @default(autoincrement())
   userId      String // Changed from Int to String
-  user        User     @relation(fields: [userId], references: [id])
+  user        user     @relation(fields: [userId], references: [id])
   quizId      Int
-  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  quiz        quiz     @relation(fields: [quizId], references: [id])
   score       Int
   attemptedAt DateTime @default(now())
 }

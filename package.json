@@ -4,7 +4,7 @@
   "description": "IntelliQ-BE",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "type": "module",
   "author": "",
@@ -25,6 +25,7 @@
     "supabase": "^1.106.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
+    "vitest": "^0.34.6",
     "yamljs": "^0.3.0"
   }
 }

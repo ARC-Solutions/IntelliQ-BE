@@ -11,4 +11,7 @@ export default (app) => {
     app.get('/api/quiz/gaming', isAuthenticated, getGamingQuiz, isFormatValid);
     app.get('/api/quiz/formula-one', isAuthenticated, getFormulaOneQuiz, isFormatValid);
     app.get('/api/quiz/css', isAuthenticated, getCSSQuiz, isFormatValid);
+    app.get('/test', (req, res) => {
+        res.json({ message: 'Server Working' });
+    });
 };
