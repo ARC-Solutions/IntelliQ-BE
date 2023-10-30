@@ -9,7 +9,7 @@ export const configureMiddlewares = (app)=> {
     app.use(express.json());
     app.use(cors({
         origin: function (origin, callback){
-          const allowedOrigins = ['http://localhost:3000', 'https://localhost:3000', 'https://www.intelliq.arc-solutions.xyz'];
+          const allowedOrigins = ['http://localhost:3000', 'https://www.intelliq.arc-solutions.xyz'];
             if (!origin || allowedOrigins.indexOf(origin) !== -1) {
                 callback(null, true);
             } else {
