@@ -6,10 +6,11 @@ export const isAuthenticated = async (req, res, next) => {
 
     // Read from cookies
     const cookieToken = req.cookies?.token;
+    //console.log(cookieToken);
 
     // Use the first available token
     const token = headerToken || cookieToken;
-
+    // console.log(token);
     if (!token) {
         return res.status(401).json({ error: 'Not authorized' });
     }

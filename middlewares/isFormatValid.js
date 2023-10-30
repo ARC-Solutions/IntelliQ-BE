@@ -22,7 +22,7 @@ export const isFormatValid = (req, res, next) => {
     }
 
     if (isValid) {
-        res.json({ questions: rawQuestions });
+        res.json({ rawQuestions });
     } else {
         res.status(400).send({ error: invalidReason });
     }

@@ -4,16 +4,35 @@ import OpenAI from "openai";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+const cleanString = (str) => {
+    return str.replace(/\n\n/g, " ");
+};
+
 export const generateQuizQuestions = async (interests, numberOfQuestions) => {
-    const prompt = `Generate ${numberOfQuestions} multiple-choice quiz questions based on the user's interests in 
-    ${interests}. Each question should come with four answer options labeled a), b), c), and d). Include the correct answer 
-    for each question, beginning the line with 'Answer:'. The correct answer should be formatted exactly like its corresponding option.
-    Your questions are not allowed to have more than 4 options under any circumstances. 
-    make sure that your response is always formated like:
-    {
-    "raw": "1) QUESTION?\\na) ANSWER 1 \\nb) ANSWER 2 \\nc) ANSWER 3 \\nd) ANSWER 4\\nAnswer: b) ANSWER 2\\n\\n"
-    }
-    no matter the number of questions`;
+    const prompt = `Generate a quiz JSON object based on the interests: ${interests}. Create ${numberOfQuestions} questions. 
+    The JSON object should be structured as follows:
+    
+      {
+        "quizTitle": "Contextual and Unique Quiz Title Here",
+        "questions": [
+          {
+            "questionTitle": "Unique and Contextual Question Title Here",
+            "text": "The actual question here?",
+            "options": [
+              "a) Option 1",
+              "b) Option 2",
+              "c) Option 3",
+              "d) Option 4"
+            ],
+            "correctAnswer": "a) Option 1"
+          }
+          // More questions here...
+        ]
+      }
+    
+    Once the quizTitle is set, it should not change. Each question should have a unique questionTitle. 
+    The questions should have exactly four options labeled a), b), c), and d).`;
+
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
@@ -30,18 +49,43 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
+
     const rawContent = response.choices[0].message.content;
-    const rawQuestions = rawContent.split('\n\n');
-    return rawQuestions.map((q) => {
-        const parts = q.split('\n');
-        const questionText = parts[0];
-        const options = parts.slice(1, -1);
-        const correctOptionKey = parts[parts.length - 1].split(' ')[1];
-        const correctAnswer = options.find(opt => opt.startsWith(correctOptionKey));
-        return {
-            text: questionText,
-            options: options,
-            correctAnswer: correctAnswer
-        };
+    console.log('rawContent:', JSON.stringify(rawContent, null, 2));
+
+    const questionStrings = rawContent.split('\n\n');
+    console.log('questionStrings:', questionStrings);
+
+    const questions = questionStrings.map(qs => {
+        try {
+            const question = JSON.parse(qs.trim());
+
+            // Check for undefined values before cleaning
+            if (question.quizTitle && question.questionTitle && question.text && question.options && question.correctAnswer) {
+                question.quizTitle = cleanString(question.quizTitle);
+                question.questionTitle = cleanString(question.questionTitle);
+                question.text = cleanString(question.text);
+                question.options = question.options.map(option => option ? cleanString(option) : option);
+                question.correctAnswer = cleanString(question.correctAnswer);
+            } else {
+                console.warn('One or more fields are undefined:', question);
+            }
+
+            return question;
+        } catch (err) {
+            console.error('Error parsing question:', err);
+            return null;
+        }
+    }).filter(q => q);
+
+    // Removing duplicates by using a Map object
+    const uniqueQuestionsMap = new Map();
+    questions.forEach(question => {
+        uniqueQuestionsMap.set(question.text, question);
     });
+
+    // Converting the Map back to an array of unique questions
+    const uniqueQuestions = Array.from(uniqueQuestionsMap.values());
+
+    return uniqueQuestions;
 };
