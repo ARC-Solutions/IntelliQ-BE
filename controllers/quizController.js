@@ -7,7 +7,7 @@ export const welcome =  async (req, res) => {
 };
 
 export const getQuiz = async (req, res) => {
-    const { interests, numberOfQuestions } = req.body;
+    const { interests, numberOfQuestions } = req.query;
     const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
     res.json({ rawQuestions });
 };
