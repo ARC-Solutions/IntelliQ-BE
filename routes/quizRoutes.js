@@ -5,7 +5,7 @@ import { isFormatValid } from "../middlewares/isFormatValid.js";
 export default (app) => {
     app.get('/', welcome);
     app.get('/api/quiz', isAuthenticated, getQuiz);
-    app.get('/api/quiz/javascript', isAuthenticated, getJSQuiz);
+    app.get('/api/quiz/javascript', isAuthenticated, getJSQuiz, isFormatValid);
     app.get('/api/quiz/agile', isAuthenticated, getAgileQuiz);
     app.get('/api/quiz/anime', isAuthenticated, getAnimeQuiz);
     app.get('/api/quiz/gaming', isAuthenticated, getGamingQuiz);

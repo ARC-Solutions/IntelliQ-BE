@@ -1,12 +1,9 @@
 import dotenv from 'dotenv';
-dotenv.config();
 import OpenAI from "openai";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+dotenv.config();
 
-const cleanString = (str) => {
-    return str.replace(/\n\n/g, " ");
-};
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 export const generateQuizQuestions = async (interests, numberOfQuestions) => {
     const prompt = `Generate a quiz JSON object based on the interests: ${interests}. Create ${numberOfQuestions} questions. 
@@ -31,7 +28,9 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
       }
     
     Once the quizTitle is set, it should not change. Each question should have a unique questionTitle. 
-    The questions should have exactly four options labeled a), b), c), and d).`;
+    The questions should have exactly four options labeled a), b), c), and d). 
+    The Contextual questionTitle is not allowed to contain 'Question Number' or 'Interest Question Number', 
+    think of something very special for each individual question.`;
 
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
@@ -44,34 +43,22 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
             'content': `${interests}, ${numberOfQuestions} questions`
         }],
         temperature: 1,
-        max_tokens: 512,
+        max_tokens: 1024,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
     });
 
     const rawContent = response.choices[0].message.content;
-    console.log('rawContent:', JSON.stringify(rawContent, null, 2));
+    console.log(response);
+    // console.log('rawContent:', JSON.stringify(rawContent, null, 2));
 
     const questionStrings = rawContent.split('\n\n');
-    console.log('questionStrings:', questionStrings);
+    // console.log('questionStrings:', questionStrings);
 
     const questions = questionStrings.map(qs => {
         try {
-            const question = JSON.parse(qs.trim());
-
-            // Check for undefined values before cleaning
-            if (question.quizTitle && question.questionTitle && question.text && question.options && question.correctAnswer) {
-                question.quizTitle = cleanString(question.quizTitle);
-                question.questionTitle = cleanString(question.questionTitle);
-                question.text = cleanString(question.text);
-                question.options = question.options.map(option => option ? cleanString(option) : option);
-                question.correctAnswer = cleanString(question.correctAnswer);
-            } else {
-                console.warn('One or more fields are undefined:', question);
-            }
-
-            return question;
+            return JSON.parse(qs.trim());
         } catch (err) {
             console.error('Error parsing question:', err);
             return null;
@@ -85,7 +72,5 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
     });
 
     // Converting the Map back to an array of unique questions
-    const uniqueQuestions = Array.from(uniqueQuestionsMap.values());
-
-    return uniqueQuestions;
+    return Array.from(uniqueQuestionsMap.values());
 };

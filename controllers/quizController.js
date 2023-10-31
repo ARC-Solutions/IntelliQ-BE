@@ -29,8 +29,8 @@ export const getAnimeQuiz = async (req, res, next) => {
 export const getJSQuiz = async (req, res, next) => {
     const questions = await generateQuizQuestions('javascript', 4);
     req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
+    // res.json({ rawQuestions: questions });
+    next();
 };
 
 export const getGamingQuiz = async (req, res, next) => {
