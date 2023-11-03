@@ -13,14 +13,22 @@ export const getQuiz = async (req, res) => {
 };
 
 export const saveQuizResults = async (req, res) => {
+    // Read from Authorization header
+    const headerToken = req.headers['authorization']?.split(' ')[1];
+
+    // Read from cookies
     const cookieToken = req.cookies?.token;
-    if (!cookieToken) {
+    //console.log(cookieToken);
+
+    // Use the first available token
+    const token = headerToken || cookieToken;
+    if (!token) {
         res.status(400).json({ error: 'No token provided.' });
         return;
     }
 
     try {
-        const { data: { user } } = await supabase.auth.getUser(cookieToken);
+        const { data: { user } } = await supabase.auth.getUser(token);
         if (!user || !user.id) {
             res.status(404).json({ error: 'User not found.' });
             return;
