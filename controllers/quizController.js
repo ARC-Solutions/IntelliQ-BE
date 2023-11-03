@@ -1,6 +1,5 @@
 import { generateQuizQuestions } from "../services/quizService.js";
-import { prisma } from "../config/prismaClient.js";
-import {json} from "express";
+import {prisma} from "../config/prismaClient.js";
 
 export const welcome =  async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/');
@@ -12,44 +11,61 @@ export const getQuiz = async (req, res) => {
     res.json({ rawQuestions });
 };
 
-export const getFormulaOneQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('formula-one', 4);
-    req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
-};
+export const saveQuizResults = async (req, res) => {
+    const { userId, rawQuestions } = req.body;
+    const { quizTitle, questions } = rawQuestions;
 
-export const getAnimeQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('anime', 4);
-    req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
-};
+    try {
+        // Check if quiz already exists for the user
+        let createdQuiz = await prisma.quizzes.findUnique({
+            where: {
+                user_id: userId
+            }
+        });
 
-export const getJSQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('javascript', 4);
-    req.rawQuestions = questions;
-    // res.json({ rawQuestions: questions });
-    next();
-};
+        // If quiz does not exist, create a new one
+        if (!createdQuiz) {
+            createdQuiz = await prisma.quizzes.create({
+                data: {
+                    user_id: userId,
+                    quiz_title: quizTitle
+                }
+            });
+        }
 
-export const getGamingQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('gaming', 4);
-    req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
-};
+        // Start transaction
+        const createdQuestions = await prisma.$transaction(
+            questions.map(question =>
+                prisma.questions.create({
+                    data: {
+                        text: question.text,
+                        options: question.options,
+                        correct_answer: question.correctAnswer,
+                        quiz_id: createdQuiz.id
+                    }
+                })
+            )
+        );
 
-export const getCSSQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('css', 4);
-    req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
-};
+        // After creating questions, create responses with the new question IDs
+        const createdResponses = await prisma.$transaction(
+            createdQuestions.map((createdQuestion, index) => {
+                const correspondingUserQuestion = questions[index];
+                return prisma.user_responses.create({
+                    data: {
+                        question_id: createdQuestion.id,
+                        quiz_id: createdQuiz.id,
+                        user_answer: correspondingUserQuestion.userAnswer,
+                        time_taken: correspondingUserQuestion.timeTaken,
+                        is_correct: correspondingUserQuestion.userAnswer === correspondingUserQuestion.correctAnswer
+                    }
+                });
+            })
+        );
 
-export const getAgileQuiz = async (req, res, next) => {
-    const questions = await generateQuizQuestions('agile-management', 4);
-    req.rawQuestions = questions;
-    res.json({ rawQuestions: questions });
-    // next();
+        res.status(201).json({ message: 'Quiz results saved successfully.', createdQuestions, createdResponses });
+    } catch (error) {
+        console.error('Error saving quiz data:', error);
+        res.status(500).json({ error: 'An error occurred while saving quiz data.' });
+    }
 };

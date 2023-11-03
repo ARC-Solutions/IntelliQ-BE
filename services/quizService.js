@@ -50,7 +50,8 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
     });
 
     const rawContent = response.choices[0].message.content;
-    console.log(response);
+    const { usage } = response;
+    console.log(usage);
     // console.log('rawContent:', JSON.stringify(rawContent, null, 2));
 
     const questionStrings = rawContent.split('\n\n');
