@@ -81,6 +81,8 @@ export const saveQuizResults = async (req, res) => {
             quiz_id: createdQuiz.id,
             rawQuestions: {
                 quiz_title: quizTitle,
+                timeTaken,
+                correctAnswersCount,
                 questions: questions.map(question => ({
                     text: question.text,
                     correctAnswer: question.correctAnswer,
