@@ -51,7 +51,6 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
 
     const rawContent = response.choices[0].message.content;
     const { usage } = response;
-    console.log(usage);
     // console.log('rawContent:', JSON.stringify(rawContent, null, 2));
 
     const questionStrings = rawContent.split('\n\n');
@@ -72,6 +71,11 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         uniqueQuestionsMap.set(question.text, question);
     });
 
+    const finalResponse = {
+        rawQuestions: Array.from(uniqueQuestionsMap.values()),
+        usageData: usage
+    }
+
     // Converting the Map back to an array of unique questions
-    return Array.from(uniqueQuestionsMap.values());
+    return finalResponse;
 };

@@ -1,45 +1,40 @@
-import { generateQuizQuestions } from "../services/quizService.js";
+import {generateQuizQuestions} from "../services/quizService.js";
 import {prisma} from "../config/prismaClient.js";
-import {supabase} from "../config/db.js";
 
-export const welcome =  async (req, res) => {
+export const welcome = async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/');
 };
 
 export const getQuiz = async (req, res) => {
-    const { interests, numberOfQuestions } = req.query;
-    const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
-    res.json({ rawQuestions });
+    const { user: { id: user_id } } = req.user;
+
+    try {
+        const {interests, numberOfQuestions} = req.query;
+        const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
+        const usage = await prisma.user_usage_data.create({
+            data: {
+                user_id: user_id,
+                prompt_tokens: rawQuestions.usageData.prompt_tokens,
+                completion_tokens: rawQuestions.usageData.completion_tokens,
+                total_tokens: rawQuestions.usageData.total_tokens,
+            }
+        });
+        res.json({rawQuestions: rawQuestions.rawQuestions});
+    } catch (e) {
+        res.status(500).json({error: 'An error occurred while generating quiz questions.', message: e.message});
+    }
 };
 
 export const saveQuizResults = async (req, res) => {
-    // Read from Authorization header
-    const headerToken = req.headers['authorization']?.split(' ')[1];
-
-    // Read from cookies
-    const cookieToken = req.cookies?.token;
-    //console.log(cookieToken);
-
-    // Use the first available token
-    const token = headerToken || cookieToken;
-    if (!token) {
-        res.status(400).json({ error: 'No token provided.' });
-        return;
-    }
+    const { user: { id: user_id } } = req.user;
 
     try {
-        const { data: { user } } = await supabase.auth.getUser(token);
-        if (!user || !user.id) {
-            res.status(404).json({ error: 'User not found.' });
-            return;
-        }
-
-        const { rawQuestions } = req.body;
-        const { quizTitle, questions, timeTaken } = rawQuestions;
+        const {rawQuestions} = req.body;
+        const {quizTitle, questions, timeTaken} = rawQuestions;
 
         const createdQuiz = await prisma.quizzes.create({
             data: {
-                user_id: user.id,
+                user_id: user_id,
                 quiz_title: quizTitle,
                 total_time_taken: timeTaken,
                 correct_answers_count: 0
@@ -73,8 +68,8 @@ export const saveQuizResults = async (req, res) => {
         await Promise.all(transactionOperations.map(operation => operation()));
 
         await prisma.quizzes.update({
-            where: { id: createdQuiz.id },
-            data: { correct_answers_count: correctAnswersCount }
+            where: {id: createdQuiz.id},
+            data: {correct_answers_count: correctAnswersCount}
         });
 
         const formattedResponse = {
@@ -94,6 +89,6 @@ export const saveQuizResults = async (req, res) => {
         res.status(201).json(formattedResponse);
     } catch (error) {
         console.error('Error saving quiz data:', error);
-        res.status(500).json({ error: 'An error occurred while saving quiz data.' });
+        res.status(500).json({error: 'An error occurred while saving quiz data.'});
     }
 };
