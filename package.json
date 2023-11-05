@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "IntelliQ-BE",
   "main": "index.js",
+  "author": "Ricky Raveanu",
   "scripts": {
     "test": "vitest",
     "start": "nodemon ./index.js"

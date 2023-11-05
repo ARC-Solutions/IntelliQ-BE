@@ -13,5 +13,5 @@ export default (app) => {
     app.post('/api/logout', logout);
     app.get('/api/auth/google', oAuth);
     app.get('/api/auth/google/callback', oAuthCallback);
-    app.get('/api/auth/userSession', userSession)
+    app.get('/api/auth/userSession', userSession);
 };

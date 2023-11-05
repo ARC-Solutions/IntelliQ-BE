@@ -28,7 +28,7 @@ paths:
           description: Success
           content:
             text/plain:
-              example: Welcome to the IntelliQ-BE API
+              example: "Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/"
 
   /api/signup:
     post:
@@ -63,8 +63,6 @@ paths:
                     type: string
                   email:
                     type: string
-                  sessionToken:
-                    type: string
         '400':
           description: User already exists
           content:
@@ -75,7 +73,7 @@ paths:
                   error:
                     type: string
 
-  /api/signin:
+  /api/login:
     post:
       tags: [ User ]
       summary: User Sign-in
@@ -93,16 +91,12 @@ paths:
                 password:
                   type: string
                   description: Existing user's password
-                provider:
-                  type: string
-                  description: Authentication provider (optional)
               required:
                 - email
                 - password
               example:
-                email: existingUser@user.com
-                password: existingPassword
-                provider: 'google'
+                email: newUser@user.com
+                password: newPassword
       responses:
         '200':
           description: User signed in successfully
@@ -115,7 +109,31 @@ paths:
                     type: string
                   email:
                     type: string
-                  sessionToken:
+        '400':
+          description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/logout:
+    post:
+      tags: [ User ]
+      summary: User Sign-out
+      operationId: logoutUser
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: User signed out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
                     type: string
         '400':
           description: Invalid login credentials
@@ -126,10 +144,63 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/getUserSession:
+  /api/auth/google:
+    get:
+      tags: [ User ]
+      summary: Google Sign-in
+      operationId: googleLoginUser
+      responses:
+        '200':
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/auth/google/callback:
+    get:
+      tags: [ User ]
+      summary: Google Sign-in Callback
+      operationId: googleLoginUserCallback
+      responses:
+        '200':
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userID:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/auth/userSession:
     get:
       tags: [ User ]
       summary: Get User Session
+      operationId: getUserSession
       security:
         - BearerAuth: [ ]
       responses:
@@ -144,8 +215,8 @@ paths:
                     type: string
                   email:
                     type: string
-        '401':
-          description: Not authorized, invalid token, no token provided
+        '400':
+          description: Invalid login credentials
           content:
             application/json:
               schema:
@@ -153,9 +224,8 @@ paths:
                 properties:
                   error:
                     type: string
-
   /api/quiz:
-    post:
+    get:
       tags: [ Quizzes ]
       summary: Retrieve Custom Quiz
       security:
@@ -177,25 +247,30 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    questions:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          text:
-                            type: string
-                          options:
-                            type: array
-                            items:
-                              type: string
-                          correctAnswer:
-                            type: string
+                type: object
+                properties:
+                  rawQuestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        quizTitle:
+                          type: string
+                        questions:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              questionTitle:
+                                type: string
+                              text:
+                                type: string
+                              options:
+                                type: array
+                                items:
+                                  type: string
+                              correctAnswer:
+                                type: string
         '400':
           description: Invalid question format
           content:
@@ -232,18 +307,71 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/javascript:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve a JavaScript Quiz
+  /api/submit-quiz:
+    post:
+      tags: [ Quizzes ]
+      summary: Submit Custom Quiz
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rawQuestions:
+                  type: object
+                  properties:
+                    quizTitle:
+                      type: string
+                    questions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          options:
+                            type: array
+                            items:
+                              type: string
+                          correctAnswer:
+                            type: string
+                          userAnswer:
+                            type: string
+                    timeTaken:
+                      type: integer
       responses:
         '200':
-          description: Successful retrieval of JavaScript quiz
+          description: Quiz submitted successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QuizSchema'
+                type: object
+                properties:
+                  quiz_id:
+                    type: string
+                  rawQuestions:
+                    type: object
+                    properties:
+                      quiz_title:
+                        type: string
+                      timeTaken:
+                        type: integer
+                      correctAnswersCount:
+                        type: integer
+                      questions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                            correctAnswer:
+                              type: string
+                            userAnswer:
+                              type: string
         '400':
           description: Invalid question format
           content:
@@ -253,18 +381,69 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/agile:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve an Agile Management Quiz
-      responses:
-        '200':
-          description: Successful retrieval of Agile Management quiz
+        '401':
+          description: Not Authorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QuizSchema'
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Must be signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to create quiz / Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /quizzes:
+    get:
+      tags: [ History ]
+      summary: Retrieve All Quizzes
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: offset
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Quizzes retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quizzes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        quiz_title:
+                          type: string
+                        total_time_taken:
+                          type: integer
         '400':
           description: Invalid question format
           content:
@@ -274,18 +453,102 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/gaming:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve a Gaming Quiz
-      responses:
-        '200':
-          description: Successful retrieval of Gaming quiz
+        '401':
+          description: Not Authorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QuizSchema'
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Must be signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to create quiz / Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /quizzes/{quiz_id}:
+    get:
+      tags: [ History ]
+      summary: Retrieve Quiz by ID
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: quiz_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  user_id:
+                    type: string
+                  quiz_title:
+                    type: string
+                  created_at:
+                    type: string
+                  total_time_taken:
+                    type: integer
+                  correct_answers_count:
+                    type: integer
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        quiz_id:
+                          type: string
+                        text:
+                          type: string
+                        options:
+                          type: array
+                          items:
+                            type: string
+                        correct_answer:
+                          type: string
+                        created_at:
+                          type: string
+                        user_responses:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              question_id:
+                                type: string
+                              quiz_id:
+                                type: string
+                              user_answer:
+                                type: string
+                              is_correct:
+                                type: boolean
+                              created_at:
+                                type: string
+
         '400':
           description: Invalid question format
           content:
@@ -295,20 +558,8 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/css:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve a CSS Quiz
-      responses:
-        '200':
-          description: Successful retrieval of CSS quiz
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizSchema'
-        '400':
-          description: Invalid question format
+        '401':
+          description: Not Authorized
           content:
             application/json:
               schema:
@@ -316,20 +567,8 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/formula-one:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve a Formula One Quiz
-      responses:
-        '200':
-          description: Successful retrieval of Formula One quiz
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizSchema'
-        '400':
-          description: Invalid question format
+        '403':
+          description: Must be signed in
           content:
             application/json:
               schema:
@@ -337,20 +576,8 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/quiz/anime:
-    get:
-      tags:
-        - Quizzes
-      summary: Retrieve an Anime Quiz
-      responses:
-        '200':
-          description: Successful retrieval of Anime quiz
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizSchema'
-        '400':
-          description: Invalid question format
+        '500':
+          description: Failed to create quiz / Internal server error
           content:
             application/json:
               schema:
