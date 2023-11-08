@@ -51,7 +51,25 @@ export const quizHistory = async (req, res) => {
         if (!quiz) {
             return res.status(404).json({ error: 'Quiz not found' });
         }
-        res.json(quiz);
+
+        const formattedQuiz = {
+            quiz_title: quiz.quiz_title,
+            total_time_taken: quiz.total_time_taken,
+            correctAnswersCount: quiz.correct_answers_count,
+            questions: quiz.questions.map(q => {
+                return {
+                    text: q.text,
+                    correct_answer: q.correct_answer,
+                    user_response: q.user_responses.map(ur => {
+                        return {
+                            userAnswer: ur.user_answer,
+                            is_correct: ur.is_correct
+                        };
+                    })[0]
+                };
+            })
+        };
+        res.json(formattedQuiz);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
