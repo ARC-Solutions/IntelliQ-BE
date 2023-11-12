@@ -17,9 +17,11 @@ export const getQuiz = async (req, res) => {
                 prompt_tokens: rawQuestions.usageData.prompt_tokens,
                 completion_tokens: rawQuestions.usageData.completion_tokens,
                 total_tokens: rawQuestions.usageData.total_tokens,
+                system_fingerprint: rawQuestions.system_fingerprint,
+                quiz_seed: rawQuestions.quiz_seed
             }
         });
-        res.json({rawQuestions: rawQuestions.rawQuestions});
+        res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
     } catch (e) {
         res.status(500).json({error: 'An error occurred while generating quiz questions.', message: e.message});
     }

@@ -1,11 +1,13 @@
 import dotenv from 'dotenv';
 import OpenAI from "openai";
+import {generateUniqueSeed} from "./seedService.js";
 
 dotenv.config();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 export const generateQuizQuestions = async (interests, numberOfQuestions) => {
+    const generatedSeed = await generateUniqueSeed();
     const prompt = `Generate a quiz JSON object based on the interests: ${interests}. Create ${numberOfQuestions} questions. 
     The JSON object should be structured as follows:
     
@@ -34,7 +36,8 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
 
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-1106',
+        response_format: { type: 'json_object'},
         messages: [{
             'role': 'system',
             'content': prompt
@@ -47,10 +50,11 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
+        seed: generatedSeed
     });
-
     const rawContent = response.choices[0].message.content;
     const { usage } = response;
+    const { system_fingerprint } = response;
     // console.log('rawContent:', JSON.stringify(rawContent, null, 2));
 
     const questionStrings = rawContent.split('\n\n');
@@ -73,9 +77,11 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
 
     const finalResponse = {
         rawQuestions: Array.from(uniqueQuestionsMap.values()),
-        usageData: usage
+        usageData: usage,
+        system_fingerprint: system_fingerprint,
+        quiz_seed: generatedSeed
     }
-
+    console.log(finalResponse);
     // Converting the Map back to an array of unique questions
     return finalResponse;
 };
