@@ -5,7 +5,7 @@ import {generateUniqueSeed} from "./seedService.js";
 dotenv.config();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
+const gpt_model = 'gpt-3.5-turbo-1106';
 export const generateQuizQuestions = async (interests, numberOfQuestions) => {
     const generatedSeed = await generateUniqueSeed();
     const prompt = `Generate a quiz JSON object based on the interests: ${interests}. Create ${numberOfQuestions} questions. 
@@ -36,7 +36,7 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
 
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo-1106',
+        model: gpt_model,
         response_format: { type: 'json_object'},
         messages: [{
             'role': 'system',
@@ -79,7 +79,8 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         rawQuestions: Array.from(uniqueQuestionsMap.values()),
         usageData: usage,
         system_fingerprint: system_fingerprint,
-        quiz_seed: generatedSeed
+        quiz_seed: generatedSeed,
+        model: gpt_model,
     }
     console.log(finalResponse);
     // Converting the Map back to an array of unique questions

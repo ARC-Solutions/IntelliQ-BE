@@ -55,13 +55,16 @@ model user_responses {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model user_usage_data {
-  id                 String   @id(map: "quiz_usage_data_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id            String   @db.Uuid
-  prompt_tokens      Int
-  completion_tokens  Int
-  total_tokens       Int
-  created_at         DateTime @default(now()) @db.Timestamptz(6)
-  system_fingerprint String?
-  quiz_seed          BigInt?  @unique
-  users              users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                  String   @id(map: "quiz_usage_data_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id             String   @db.Uuid
+  prompt_tokens       Int
+  completion_tokens   Int
+  total_tokens        Int
+  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  system_fingerprint  String?
+  quiz_seed           BigInt?  @unique
+  used_model          String?
+  count_Questions     Int?
+  response_time_taken Float?   @db.Real
+  users               users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

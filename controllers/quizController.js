@@ -7,10 +7,14 @@ export const welcome = async (req, res) => {
 
 export const getQuiz = async (req, res) => {
     const { user: { id: user_id } } = req.user;
+    const startTime = process.hrtime();
 
     try {
         const {interests, numberOfQuestions} = req.query;
         const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
+        const endTime = process.hrtime(startTime);
+        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000)/1000;
+        res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
         const usage = await prisma.user_usage_data.create({
             data: {
                 user_id: user_id,
@@ -18,10 +22,12 @@ export const getQuiz = async (req, res) => {
                 completion_tokens: rawQuestions.usageData.completion_tokens,
                 total_tokens: rawQuestions.usageData.total_tokens,
                 system_fingerprint: rawQuestions.system_fingerprint,
-                quiz_seed: rawQuestions.quiz_seed
+                quiz_seed: rawQuestions.quiz_seed,
+                used_model: rawQuestions.model,
+                count_Questions: Number(numberOfQuestions),
+                response_time_taken: timeTaken
             }
         });
-        res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
     } catch (e) {
         res.status(500).json({error: 'An error occurred while generating quiz questions.', message: e.message});
     }
