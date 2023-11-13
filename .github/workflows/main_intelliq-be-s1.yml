@@ -10,21 +10,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-	steps:
+    steps:
       - uses: actions/checkout@v4
-
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
       - name: npm install, build
         run: |
           npm install
           npm run build --if-present
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
@@ -34,11 +31,14 @@ jobs:
   deploy_to_first_app:
     runs-on: ubuntu-latest
     needs: build
-    environment: { name: 'Production', url: ${{ steps.deploy-to-webapp.outputs.webapp-url }} }
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
-        with: { name: node-app }
+        with:
+          name: node-app
       - run: unzip release.zip
       - name: 'Deploy to Azure Web App - IntelliQ-BE-S1'
         id: deploy-to-webapp
@@ -52,11 +52,14 @@ jobs:
   deploy_to_second_app:
     runs-on: ubuntu-latest
     needs: build
-    environment: { name: 'production', url: ${{ steps.deploy-to-second-webapp.outputs.webapp-url }} }
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-second-webapp.outputs.webapp-url }}
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
-        with: { name: node-app }
+        with:
+          name: node-app
       - run: unzip release.zip
       - name: 'Deploy to Azure Web App - IntelliQ-BE'
         id: deploy-to-second-webapp
