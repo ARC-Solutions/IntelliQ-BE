@@ -12,24 +12,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
       - name: npm install, build, and test
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
-
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
@@ -37,35 +32,32 @@ jobs:
           path: release.zip
 
   deploy:
-  runs-on: ubuntu-latest
-  needs: build
-  environment:
-    name: 'production'
-    url: ${{ steps.deploy-to-first-webapp.outputs.webapp-url }} # Ensure this outputs a valid URL
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-first-webapp.outputs.webapp-url }}
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      - name: 'Deploy to Azure Web App WEAK SERVER'
+        id: deploy-to-first-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'IntelliQ-BE'
+          slot-name: 'production'
+          package: .
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_2717c719250d410bae9c81c36fd93094 }}
+      - name: 'Deploy to Azure Web App SECOND SERVER'
+        id: deploy-to-second-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'IntelliQ-BE-S1'
+          slot-name: 'production'
+          package: .
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_e24498ce0aea41ffa2d08302d5e8d3df }}
 
-  steps:
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v3
-      with:
-        name: node-app
-
-    - name: Unzip artifact for deployment
-      run: unzip release.zip
-
-    - name: 'Deploy to Azure Web App WEAK SERVER'
-      id: deploy-to-first-webapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'IntelliQ-BE'
-        slot-name: 'production'
-        package: .
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_2717c719250d410bae9c81c36fd93094 }}
-
-    - name: 'Deploy to Azure Web App SECOND SERVER'
-      id: deploy-to-second-webapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'IntelliQ-BE-S1'
-        slot-name: 'production'
-        package: .
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_e24498ce0aea41ffa2d08302d5e8d3df }}
