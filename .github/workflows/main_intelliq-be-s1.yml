@@ -35,7 +35,7 @@ jobs:
           name: node-app
           path: release.zip
 
-  deploy:
+  deploy_first_app:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -59,3 +59,27 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_692EF039A4D1414B94D4425184723E45 }}
+  deploy_second_app:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'IntelliQ-BE-S1'
+          slot-name: 'Production'
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B80C61B3BAA14AB1829F24877CB9082A }}
