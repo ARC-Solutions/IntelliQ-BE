@@ -79,7 +79,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'IntelliQ-BE-S1'
+          app-name: 'IntelliQ-BE'
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B80C61B3BAA14AB1829F24877CB9082A }}
