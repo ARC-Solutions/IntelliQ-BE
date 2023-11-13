@@ -82,4 +82,4 @@ jobs:
           app-name: 'IntelliQ-BE'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B80C61B3BAA14AB1829F24877CB9082A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_WEAK_SERVER }}
