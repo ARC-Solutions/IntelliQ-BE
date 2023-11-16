@@ -82,7 +82,7 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         quiz_seed: generatedSeed,
         model: gpt_model,
     }
-    console.log(finalResponse);
+    // console.log(finalResponse);
     // Converting the Map back to an array of unique questions
     return finalResponse;
 };

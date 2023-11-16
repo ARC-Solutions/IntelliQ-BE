@@ -36,7 +36,7 @@ export const userHistory = async (req, res) => {
 };
 
 export const quizHistory = async (req, res) => {
-    console.log('req.params.id:', req.params.quizId);
+    // console.log('req.params.id:', req.params.quizId);
     try {
         const quiz = await prisma.quizzes.findUnique({
             where: { id: req.params.quizId },
