@@ -1,15 +1,16 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
-export const configureMiddlewares = (app)=> {
+export const configureMiddlewares = (app) => {
     app.use(express.json());
     app.use(cors({
-        origin: function (origin, callback){
-          const allowedOrigins = ['http://localhost:3000', 'https://www.intelliq.arc-solutions.xyz'];
+        origin: function (origin, callback) {
+            const allowedOrigins = ['http://localhost:3000', 'https://www.intelliq.arc-solutions.xyz', 'https://www.intelliq-dev.arc-solutions.xyz'];
             if (!origin || allowedOrigins.indexOf(origin) !== -1) {
                 callback(null, true);
             } else {
@@ -24,7 +25,7 @@ export const configureMiddlewares = (app)=> {
             secret: process.env.SESSION_SECRET,
             resave: false,
             saveUninitialized: true,
-            cookie: { secure: true },
+            cookie: {secure: true},
         })
     );
 };
