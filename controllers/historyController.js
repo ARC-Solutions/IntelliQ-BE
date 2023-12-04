@@ -1,7 +1,7 @@
 import {prisma} from "../config/prismaClient.js";
 import {formatDate} from "../services/formatDate.js";
 
-export const userHistory = async (req, res) => {
+const userHistory = async (req, res) => {
     const { user: { id: user_id } } = req.user;
 
     // Retrieve offset and limit from the query parameters, and provide default values if they are not provided
@@ -35,7 +35,7 @@ export const userHistory = async (req, res) => {
     }
 };
 
-export const quizHistory = async (req, res) => {
+const quizHistory = async (req, res) => {
     // console.log('req.params.id:', req.params.quizId);
     try {
         const quiz = await prisma.quizzes.findUnique({
@@ -74,3 +74,5 @@ export const quizHistory = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export { userHistory, quizHistory };
