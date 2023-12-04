@@ -1,6 +1,4 @@
-import { validationResult } from "express-validator";
-import { supabase } from "../config/db.js";
-import { prisma } from "../config/prismaClient.js";
+import {supabase} from "../config/db.js";
 
 const handleErrors = (res, error, statusCode = 400) => {
     return res.status(statusCode).json({ error: error.message });
