@@ -6,7 +6,7 @@ const handleErrors = (res, error, statusCode = 400) => {
     return res.status(statusCode).json({ error: error.message });
 };
 
-export const userSession = async (req, res) => {
+const userSession = async (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ error: 'Not authorized' });
 
@@ -21,7 +21,7 @@ export const userSession = async (req, res) => {
     }
 };
 
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -48,7 +48,7 @@ export const signup = async (req, res) => {
     }
 };
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
     const { email, password } = req.body;
     try{
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -71,14 +71,14 @@ export const login = async (req, res) => {
     }
 };
 
-export const logout = async (req, res) => {
+const logout = async (req, res) => {
     req.session.destroy((err) => {
         if (err) return res.status(500).send('Could not log out');
         res.status(200).send('Logged out successfully');
     });
 };
 
-export const oAuth = async (req, res) => {
+const oAuth = async (req, res) => {
     try {
         const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
         if (error) return handleErrors(res, error);
@@ -90,7 +90,7 @@ export const oAuth = async (req, res) => {
     }
 };
 
-export const oAuthCallback = async (req, res) => {
+const oAuthCallback = async (req, res) => {
     try {
         // Exchange the code for a token
         const { code } = req.query;
@@ -120,3 +120,5 @@ export const oAuthCallback = async (req, res) => {
         res.status(500).send(error.message);
     }
 };
+
+export { userSession, signup, login, logout, oAuth, oAuthCallback };
