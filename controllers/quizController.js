@@ -1,11 +1,11 @@
 import {generateQuizQuestions} from "../services/quizService.js";
 import {prisma} from "../config/prismaClient.js";
 
-export const welcome = async (req, res) => {
+const welcome = async (req, res) => {
     res.send('Welcome to the IntelliQ-BE API! For Documentation please visit: intelliq-be.azurewebsites.net/api-docs/');
 };
 
-export const getQuiz = async (req, res) => {
+const getQuiz = async (req, res) => {
     const { user: { id: user_id } } = req.user;
     const startTime = process.hrtime();
 
@@ -33,7 +33,7 @@ export const getQuiz = async (req, res) => {
     }
 };
 
-export const saveQuizResults = async (req, res) => {
+const saveQuizResults = async (req, res) => {
     const { user: { id: user_id } } = req.user;
 
     try {
@@ -100,3 +100,5 @@ export const saveQuizResults = async (req, res) => {
         res.status(500).json({error: 'An error occurred while saving quiz data.'});
     }
 };
+
+export {welcome, getQuiz, saveQuizResults};
