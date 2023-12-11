@@ -61,13 +61,8 @@ const quizHistory = async (req, res) => {
                 questions: quiz.questions.map(q => {
                     return {
                         text: q.text,
-                        correct_answer: q.correct_answer,
-                        user_response: q.user_responses.map(ur => {
-                            return {
-                                userAnswer: ur.user_answer,
-                                is_correct: ur.is_correct
-                            };
-                        })[0]
+                        correctAnswer: q.correct_answer,
+                        userAnswer: q.user_responses[0].user_answer,
                     };
                 })
             }
