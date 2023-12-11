@@ -53,21 +53,24 @@ const quizHistory = async (req, res) => {
         }
 
         const formattedQuiz = {
-            quiz_title: quiz.quiz_title,
-            total_time_taken: quiz.total_time_taken,
-            correctAnswersCount: quiz.correct_answers_count,
-            questions: quiz.questions.map(q => {
-                return {
-                    text: q.text,
-                    correct_answer: q.correct_answer,
-                    user_response: q.user_responses.map(ur => {
-                        return {
-                            userAnswer: ur.user_answer,
-                            is_correct: ur.is_correct
-                        };
-                    })[0]
-                };
-            })
+            quiz_id: quiz.id,
+            rawQuestions: {
+                timeTaken: quiz.total_time_taken,
+                quiz_title: quiz.quiz_title,
+                correctAnswersCount: quiz.correct_answers_count,
+                questions: quiz.questions.map(q => {
+                    return {
+                        text: q.text,
+                        correct_answer: q.correct_answer,
+                        user_response: q.user_responses.map(ur => {
+                            return {
+                                userAnswer: ur.user_answer,
+                                is_correct: ur.is_correct
+                            };
+                        })[0]
+                    };
+                })
+            }
         };
         res.json(formattedQuiz);
     } catch (error) {
