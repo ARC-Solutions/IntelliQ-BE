@@ -73,4 +73,19 @@ const quizHistory = async (req, res) => {
     }
 };
 
-export { userHistory, quizHistory };
+const deleteHistory = async (req,res) => {
+    try {
+        const quiz = await prisma.quizzes.delete({
+            where: {id:req.params.quizId}
+        });
+        console.log('quiz deleted')
+        if(!quiz){
+            return res.status(404).json({ error: 'Quiz not found'});
+        }
+        res.json(quiz);
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+};
+
+export { userHistory, quizHistory, deleteHistory };
