@@ -585,6 +585,48 @@ paths:
                 properties:
                   error:
                     type: string
+    delete:
+      tags: [ History ]
+      summary: Delete Quiz by ID
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: quiz_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Quiz retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  user_id:
+                    type: string
+                  quiz_title:
+                    type: string
+                  created_at:
+                    type: string
+                  total_time_taken:
+                    type: integer
+                  correct_answers_count:
+                    type: integer
+        '500':
+          description: Entry doesn't exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
 
 components:
   schemas:
