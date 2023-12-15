@@ -2,7 +2,7 @@ import {prisma} from "../config/prismaClient.js";
 import {formatDate} from "../services/formatDate.js";
 
 const userHistory = async (req, res) => {
-    const { user: { id: user_id } } = req.user;
+    const {user: {id: user_id}} = req.user;
 
     // Retrieve offset and limit from the query parameters, and provide default values if they are not provided
     const offset = parseInt(req.query.offset, 10) || 0;
@@ -10,10 +10,10 @@ const userHistory = async (req, res) => {
 
     try {
         const quizzes = await prisma.quizzes.findMany({
-            where: { user_id },
+            where: {user_id},
             skip: offset, // skip a certain number of records
             take: limit, // take a certain number of records
-            orderBy: { created_at: 'desc' },
+            orderBy: {created_at: 'desc'},
             select: {
                 id: true,
                 quiz_title: true,
@@ -27,19 +27,20 @@ const userHistory = async (req, res) => {
         }));
 
         // Also return the total count of records for the frontend to calculate total pages
-        const totalCount = await prisma.quizzes.count({ where: { user_id } });
+        const totalCount = await prisma.quizzes.count({where: {user_id}});
 
-        res.json({ quizzes: formattedQuizzes, totalCount });
+        res.json({quizzes: formattedQuizzes, totalCount});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 };
 
 const quizHistory = async (req, res) => {
     // console.log('req.params.id:', req.params.quizId);
+    const {user: {id: user_id}} = req.user;
     try {
         const quiz = await prisma.quizzes.findUnique({
-            where: { id: req.params.quizId },
+            where: {id: req.params.quizId, user_id},
             include: {
                 questions: {
                     include: {
@@ -49,7 +50,10 @@ const quizHistory = async (req, res) => {
             }
         });
         if (!quiz) {
-            return res.status(404).json({ error: 'Quiz not found' });
+            return res.status(404).json({
+                message: 'You are trying to access other users data',
+                error: 'Quiz not found'
+            });
         }
 
         const formattedQuiz = {
@@ -69,8 +73,23 @@ const quizHistory = async (req, res) => {
         };
         res.json(formattedQuiz);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({error: error.message});
     }
 };
 
-export { userHistory, quizHistory };
+const deleteHistory = async (req, res) => {
+    const {user: {id: user_id}} = req.user;
+    try {
+        const quiz = await prisma.quizzes.delete({
+            where: {id: req.params.quizId, user_id}
+        });
+        if (!quiz) {
+            return res.status(404).json({error: 'Quiz not found'});
+        }
+        res.json(quiz);
+    } catch (error) {
+        res.status(500).json({message: 'You are trying to access other users data', error: error.message})
+    }
+};
+
+export {userHistory, quizHistory, deleteHistory};
