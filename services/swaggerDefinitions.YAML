@@ -585,7 +585,7 @@ paths:
                 properties:
                   error:
                     type: string
-    delete:
+    Patch:
       tags: [ History ]
       summary: Delete Quiz by ID
       security:
