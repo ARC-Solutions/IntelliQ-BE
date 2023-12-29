@@ -8,5 +8,5 @@ import {
 export default (app) => {
     app.get('/quizzes', isAuthenticated, userHistory);
     app.get('/quizzes/:quizId', isAuthenticated, quizHistory);
-    app.delete('/quizzes/:quizId', isAuthenticated, deleteHistory);
+    app.patch('/quizzes/:quizId', isAuthenticated, deleteHistory);
 };
