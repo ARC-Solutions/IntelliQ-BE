@@ -6,7 +6,7 @@
   "author": "",
   "scripts": {
     "test": "vitest",
-    "start": "nodemon ./index.js"
+    "dev": "nodemon ./index.js"
   },
   "type": "module",
   "license": "ISC",

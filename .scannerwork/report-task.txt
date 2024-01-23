@@ -1,6 +1,0 @@
-projectKey=ARC-Solutions_IntelliQ-BE_AYy35qOq-YP91VLw1uNR
-serverUrl=http://localhost:9000
-serverVersion=10.3.0.82913
-dashboardUrl=http://localhost:9000/dashboard?id=ARC-Solutions_IntelliQ-BE_AYy35qOq-YP91VLw1uNR
-ceTaskId=AYy3_T3Y-YP91VLw1uN3
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AYy3_T3Y-YP91VLw1uN3
