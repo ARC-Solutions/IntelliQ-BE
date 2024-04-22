@@ -1,4 +1,4 @@
-import {generateQuizQuestions} from "../services/quizService.js";
+import {generateQuizQuestions, generateQuizVideo} from "../services/quizService.js";
 import {prisma} from "../config/prismaClient.js";
 
 const welcome = async (req, res) => {
@@ -30,6 +30,34 @@ const getQuiz = async (req, res) => {
         });
     } catch (e) {
         res.status(500).json({error: 'An error occurred while generating quiz questions.', message: e.message});
+    }
+};
+
+const getQuizVideo = async (req, res) => {
+    const { user: { id: user_id } } = req.user;
+    const startTime = process.hrtime();
+    try {
+        const {summary, topic, numberOfQuestions} = req.body;
+        const rawQuestions = await generateQuizVideo(summary, topic, numberOfQuestions);
+        const endTime = process.hrtime(startTime);
+        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000)/1000;
+        res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
+        const usage = await prisma.user_usage_data.create({
+            data: {
+                user_id: user_id,
+                prompt_tokens: rawQuestions.usageData.prompt_tokens,
+                completion_tokens: rawQuestions.usageData.completion_tokens,
+                total_tokens: rawQuestions.usageData.total_tokens,
+                system_fingerprint: rawQuestions.system_fingerprint,
+                quiz_seed: rawQuestions.quiz_seed,
+                used_model: rawQuestions.model,
+                count_Questions: Number(numberOfQuestions),
+                response_time_taken: timeTaken
+            }
+        });
+    }
+    catch (e) {
+        res.status(500).json({error: 'An error occurred while generating quiz video.', message: e.message});
     }
 };
 
@@ -101,4 +129,4 @@ const saveQuizResults = async (req, res) => {
     }
 };
 
-export {welcome, getQuiz, saveQuizResults};
+export {welcome, getQuiz, getQuizVideo, saveQuizResults};

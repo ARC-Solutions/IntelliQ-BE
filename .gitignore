@@ -1,7 +1,7 @@
 # misc
 .env
 .DS_Store
-.env.local
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local
@@ -10,3 +10,4 @@ encodeURIComponent.ts
 aaaaaaaaaa.cjs
 node_modules
 lmao.js
+.env.local

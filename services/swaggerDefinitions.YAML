@@ -23,7 +23,7 @@ tags:
 paths:
   /api/welcome:
     get:
-      tags: [General]
+      tags: [ General ]
       summary: Retrieve Welcome Message
       responses:
         '200':
@@ -34,7 +34,7 @@ paths:
 
   /api/signup:
     post:
-      tags: [User]
+      tags: [ User ]
       summary: Register New User
       operationId: registerUser
       requestBody:
@@ -219,6 +219,91 @@ paths:
                     type: string
         '400':
           description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/video-quiz:
+    get:
+      tags: [ Quizzes ]
+      summary: Retrieve Video Quiz
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                summary:
+                  type: string
+                topic:
+                  type: string
+                numberOfQuestions:
+                  type: integer
+      responses:
+        '200':
+          description: Custom quiz retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rawQuestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        quizTitle:
+                          type: string
+                        questions:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              questionTitle:
+                                type: string
+                              text:
+                                type: string
+                              options:
+                                type: array
+                                items:
+                                  type: string
+                              correctAnswer:
+                                type: string
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Must be signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to create quiz / Internal server error
           content:
             application/json:
               schema:
