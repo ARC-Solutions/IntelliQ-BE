@@ -394,6 +394,87 @@ paths:
                 properties:
                   error:
                     type: string
+  /api/blank-quiz:
+    get:
+      tags: [Quizzes]
+      summary: Retrieve a fill in the blank quiz
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - name: numberOfQuestions
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: interests
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Custom quiz retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rawQuestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        quizTitle:
+                          type: string
+                        questions:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              questionTitle:
+                                type: string
+                              text:
+                                type: string
+                              correctAnswer:
+                                type: string
+                  seed:
+                    type: integer
+        '400':
+          description: Invalid question format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Must be signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to create quiz / Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /api/submit-quiz:
     post:
       tags: [ Quizzes ]
