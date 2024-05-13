@@ -533,8 +533,14 @@ paths:
                           type: string
                         quiz_title:
                           type: string
-                        total_time_taken:
-                          type: integer
+                        created_at:
+                          type: string
+                  totalCount:
+                    type: integer
+                  topFiveTopics:
+                    type: array
+                    items:
+                      type: string
         '400':
           description: Invalid question format
           content:
