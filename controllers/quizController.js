@@ -1,4 +1,4 @@
-import {generateQuizQuestions, generateQuizVideo} from "../services/quizService.js";
+import {generateBlanksQuiz, generateQuizQuestions, generateQuizVideo} from "../services/quizService.js";
 import {prisma} from "../config/prismaClient.js";
 
 const welcome = async (req, res) => {
@@ -6,14 +6,14 @@ const welcome = async (req, res) => {
 };
 
 const getQuiz = async (req, res) => {
-    const { user: { id: user_id } } = req.user;
+    const {user: {id: user_id}} = req.user;
     const startTime = process.hrtime();
 
     try {
         const {interests, numberOfQuestions} = req.query;
         const rawQuestions = await generateQuizQuestions(interests, numberOfQuestions);
         const endTime = process.hrtime(startTime);
-        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000)/1000;
+        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000) / 1000;
         res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
         const usage = await prisma.user_usage_data.create({
             data: {
@@ -34,13 +34,13 @@ const getQuiz = async (req, res) => {
 };
 
 const getQuizVideo = async (req, res) => {
-    const { user: { id: user_id } } = req.user;
+    const {user: {id: user_id}} = req.user;
     const startTime = process.hrtime();
     try {
         const {summary, topic, numberOfQuestions} = req.body;
         const rawQuestions = await generateQuizVideo(summary, topic, numberOfQuestions);
         const endTime = process.hrtime(startTime);
-        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000)/1000;
+        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000) / 1000;
         res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
         const usage = await prisma.user_usage_data.create({
             data: {
@@ -55,14 +55,41 @@ const getQuizVideo = async (req, res) => {
                 response_time_taken: timeTaken
             }
         });
-    }
-    catch (e) {
+    } catch (e) {
         res.status(500).json({error: 'An error occurred while generating quiz video.', message: e.message});
     }
 };
 
+const getBlanksQuiz = async (req, res) => {
+    const {user: {id: user_id}} = req.user;
+    const startTime = process.hrtime();
+    try {
+        const {interests, numberOfQuestions} = req.query;
+        const rawQuestions = await generateBlanksQuiz(interests, numberOfQuestions);
+        const endTime = process.hrtime(startTime);
+        const timeTaken = (endTime[0] * 1000 + endTime[1] / 1000000) / 1000;
+        res.json({rawQuestions: rawQuestions.rawQuestions, seed: rawQuestions.quiz_seed});
+        const usage = await prisma.user_usage_data.create({
+            data: {
+                user_id: user_id,
+                prompt_tokens: rawQuestions.usageData.prompt_tokens,
+                completion_tokens: rawQuestions.usageData.completion_tokens,
+                total_tokens: rawQuestions.usageData.total_tokens,
+                system_fingerprint: rawQuestions.system_fingerprint,
+                quiz_seed: rawQuestions.quiz_seed,
+                used_model: rawQuestions.model,
+                count_Questions: Number(numberOfQuestions),
+                response_time_taken: timeTaken
+            }
+        });
+    } catch (error) {
+        console.error('Error saving quiz data:', error);
+        res.status(500).json({error: 'An error occurred while saving quiz data.'});
+    }
+}
+
 const saveQuizResults = async (req, res) => {
-    const { user: { id: user_id } } = req.user;
+    const {user: {id: user_id}} = req.user;
 
     try {
         const {rawQuestions} = req.body;
@@ -133,4 +160,4 @@ const saveQuizResults = async (req, res) => {
     }
 };
 
-export {welcome, getQuiz, getQuizVideo, saveQuizResults};
+export {welcome, getQuiz, getQuizVideo, getBlanksQuiz, saveQuizResults};
