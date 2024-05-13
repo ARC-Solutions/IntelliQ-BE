@@ -26,18 +26,20 @@ model quizzes {
   created_at            DateTime         @default(now()) @db.Timestamptz(6)
   total_time_taken      Int?
   correct_answers_count Int              @default(0)
+  topics                String[]
   questions             questions[]
   users                 users            @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_responses        user_responses[]
 }
 
 model users {
-  id              String            @id @default(dbgenerated("auth.uid()")) @db.Uuid
-  email           String
-  created_at      DateTime          @default(now()) @db.Timestamptz(6)
-  password        String?
-  quizzes         quizzes[]
-  user_usage_data user_usage_data[]
+  id                    String                  @id @default(dbgenerated("auth.uid()")) @db.Uuid
+  email                 String
+  created_at            DateTime                @default(now()) @db.Timestamptz(6)
+  password              String?
+  quizzes               quizzes[]
+  user_usage_data       user_usage_data[]
+  user_usage_transcript user_usage_transcript[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -66,5 +68,18 @@ model user_usage_data {
   used_model          String?
   count_Questions     Int?
   response_time_taken Float?   @db.Real
-  users               users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users               users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model user_usage_transcript {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id             String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prompt_tokens       Int
+  completion_tokens   Int
+  total_tokens        Int
+  system_fingerprint  String?
+  used_model          String?
+  response_time_taken Float?   @db.Real
+  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  users               users    @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "public_user_usage_transcript_user_id_fkey")
 }

@@ -17,7 +17,7 @@ const userHistory = async (req, res) => {
             select: {
                 id: true,
                 quiz_title: true,
-                created_at: true
+                created_at: true,
             }
         });
 
@@ -26,10 +26,35 @@ const userHistory = async (req, res) => {
             created_at: formatDate(quiz.created_at)
         }));
 
-        // Also return the total count of records for the frontend to calculate total pages
+        const allQuizzes = await prisma.quizzes.findMany({
+            where: {user_id},
+            select: {
+                topics: true // Include topics in the selection
+            }
+        });
+
+        // extract topics and flatten the array
+        const topics = allQuizzes.flatMap(quiz => quiz.topics);
+
+        // count the occurrence of each topic
+        const topicCounts = topics.reduce((counts, topic) => {
+            counts[topic] = (counts[topic] || 0) + 1;
+            return counts;
+        }, {});
+
+        // sort the topics by their occurrence count in descending order
+        const sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+
+        // Log the top five topics along with their occurrence count
+        // const topFiveTopicsWithCount = sortedTopics.slice(0, 5).map(topic => `${topic[0]} x${topic[1]}`);
+        // console.log(topFiveTopicsWithCount); // Log the top five topics
+
+        // return the top five topics without their occurrence count
+        const topFiveTopics = sortedTopics.slice(0, 5).map(topic => topic[0]);
+
         const totalCount = await prisma.quizzes.count({where: {user_id}});
 
-        res.json({quizzes: formattedQuizzes, totalCount});
+        res.json({quizzes: formattedQuizzes, totalCount, topFiveTopics});
     } catch (error) {
         res.status(500).json({error: error.message});
     }

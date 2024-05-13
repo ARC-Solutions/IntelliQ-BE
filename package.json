@@ -6,7 +6,9 @@
   "author": "",
   "scripts": {
     "test": "vitest",
-    "dev": "nodemon ./index.js"
+    "dev": "nodemon -r dotenv/config ./index.js dotenv_config_path=./.env.development",
+    "db-introspect": "dotenv -e .env.development -- prisma generate",
+    "db-generate": "dotenv -e .env.development -- prisma db pull"
   },
   "type": "module",
   "license": "ISC",
@@ -17,6 +19,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "dotenv-cli": "^7.4.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",

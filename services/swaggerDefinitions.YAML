@@ -412,6 +412,10 @@ paths:
                   properties:
                     quizTitle:
                       type: string
+                    quizTopics:
+                      type: array
+                      items:
+                        type: string
                     questions:
                       type: array
                       items:
