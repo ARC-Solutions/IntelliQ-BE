@@ -12,3 +12,4 @@ node_modules
 lmao.js
 .env.development
 bun.lockb
+.env.tests
