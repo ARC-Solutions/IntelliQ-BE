@@ -1,0 +1,55 @@
+name: Deploy to Other Environments - S2 and S3
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-path: ${{ steps.build.outputs.artifact-path }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build --if-present
+
+      - name: Zip the build
+        run: zip -r release.zip ./*
+        id: build
+        outputs:
+          artifact-path: release.zip
+
+  deploy_S2:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to Azure Web App - S2
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'IntelliQ-BE-S2'
+          slot-name: 'Production'
+          package: ${{ needs.build.outputs.artifact-path }}
+          publish-profile: ${{ secrets.INTELLIQS2 }}
+
+  deploy_S3:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to Azure Web App - S3
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'IntelliQ-BE-S3'
+          slot-name: 'Production'
+          package: ${{ needs.build.outputs.artifact-path }}
+          publish-profile: ${{ secrets.INTELLIQS3 }}
