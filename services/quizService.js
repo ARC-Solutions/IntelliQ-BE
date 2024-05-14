@@ -179,15 +179,16 @@ const generateBlanksQuiz = async(interests, numberOfQuestions) => {
         "quizTitle": "Contextual and Unique Quiz Title Here", 
             "questions": 
                 [ 
-                    { "questionTitle": "Unique and Contextual Question Title Here", 
+                    { 
+                        "questionTitle": "Unique and Contextual Question Title Here?", 
                         "text": "The actual fill in the blanks sentence",  
                         "correctAnswer": "the actual string that needs to go in the blank space inside text" 
                     } 
-                        // More questions here... 
+                    // More questions here that follow the exact same structure.
                 ] 
     } 
     Once the quizTitle is set, it should not change. 
-    Each question should have a unique questionTitle. 
+    Each question should have a unique questionTitle and isn't allowed to contain a blank. 
     The Contextual questionTitle is not allowed to contain 'Question Number' or 'Interest Question Number', 
     think of something very special for each individual question.
     The blanks need to be represented like: __`
