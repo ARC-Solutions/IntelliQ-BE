@@ -187,9 +187,10 @@ const generateBlanksQuiz = async(interests, numberOfQuestions) => {
                 ] 
     } 
     Once the quizTitle is set, it should not change. 
-    Each question should have a unique questionTitle, the questionTitle needs to be a question. 
+    Each question should have a unique questionTitle. 
     The Contextual questionTitle is not allowed to contain 'Question Number' or 'Interest Question Number', 
-    think of something very special for each individual question.`
+    think of something very special for each individual question.
+    The blanks need to be represented like: __`
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
         model: gpt_model,
