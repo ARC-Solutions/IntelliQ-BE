@@ -176,22 +176,32 @@ const generateBlanksQuiz = async(interests, numberOfQuestions) => {
     Create ${numberOfQuestions} questions. 
     The JSON object should be structured as follows: 
     { 
-        "quizTitle": "Contextual and Unique Quiz Title Here", 
-            "questions": 
-                [ 
-                    { 
-                        "questionTitle": "Unique and Contextual Question Title Here?", 
-                        "text": "The actual fill in the blanks sentence",  
-                        "correctAnswer": "the actual string that needs to go in the blank space inside text" 
-                    } 
-                    // More questions here that follow the exact same structure.
-                ] 
+        "quizTitle": "The Ultimate Car Enthusiast Quiz", 
+        "questions": 
+            [ 
+                { 
+                    "questionTitle": "Unique and Contextual Question Title Here?", 
+                    "text": "The __ is known for its sleek design and incredible speed.",  
+                    "correctAnswer": "supercar"
+                }, 
+                { 
+                    "questionTitle": "Classic Car Aficionado's Delight?", 
+                    "text": "The __ Mustang is an iconic symbol of American muscle cars.",  
+                    "correctAnswer": "Ford"
+                }, 
+                { 
+                    "questionTitle": "Car Tech Fanatics Unite?", 
+                    "text": "The latest innovation in car technology is the __-driving feature.",  
+                    "correctAnswer": "self"
+                } 
+                // More questions here that follow the exact same structure.
+            ] 
     } 
     Once the quizTitle is set, it should not change. 
     Each question should have a unique questionTitle and isn't allowed to contain a blank. 
     The Contextual questionTitle is not allowed to contain 'Question Number' or 'Interest Question Number', 
     think of something very special for each individual question.
-    The blanks need to be represented like: __`
+    The blanks need to be represented like: __`;
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
         model: gpt_model,
