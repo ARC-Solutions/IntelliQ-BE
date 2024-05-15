@@ -50,7 +50,10 @@ const userHistory = async (req, res) => {
         // console.log(topFiveTopicsWithCount); // Log the top five topics
 
         // return the top five topics without their occurrence count
-        const topFiveTopics = sortedTopics.slice(0, 5).map(topic => topic[0]);
+        const topFiveTopics = sortedTopics.slice(0, 5).map(topic => ({
+            name: topic[0],
+            topic_frequency: topic[1]
+        }));
 
         const totalCount = await prisma.quizzes.count({where: {user_id}});
 
