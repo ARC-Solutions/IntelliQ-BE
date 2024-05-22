@@ -51,7 +51,7 @@ const userHistory = async (req, res) => {
 
         // return the top five topics without their occurrence count
         const topFiveTopics = sortedTopics.slice(0, 5).map(topic => ({
-            name: topic[0].toUpperCase(),
+            name: topic[0].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' '),
             topic_frequency: topic[1]
         }));
 
