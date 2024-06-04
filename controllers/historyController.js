@@ -33,6 +33,14 @@ const userHistory = async (req, res) => {
             }
         });
 
+        // Fisher-Yates (Knuth) shuffle algorithm
+        const shuffleArray = (array) => {
+            for(let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
         // extract topics and flatten the array
         const topics = allQuizzes.flatMap(quiz => quiz.topics);
 
@@ -56,6 +64,8 @@ const userHistory = async (req, res) => {
         }));
 
         const totalCount = await prisma.quizzes.count({where: {user_id}});
+        shuffleArray(topFiveTopics)
+        console.log(topFiveTopics);
 
         res.json({quizzes: formattedQuizzes, totalCount, topFiveTopics});
     } catch (error) {
