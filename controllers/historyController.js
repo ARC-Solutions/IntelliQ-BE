@@ -42,7 +42,7 @@ const userHistory = async (req, res) => {
         }
 
         // extract topics and flatten the array
-        const topics = allQuizzes.flatMap(quiz => quiz.topics);
+        const topics = allQuizzes.flatMap(quiz => quiz.topics.map(topic => topic.toLowerCase()));
 
         // count the occurrence of each topic
         const topicCounts = topics.reduce((counts, topic) => {
