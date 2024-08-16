@@ -5,7 +5,7 @@ import {generateUniqueSeed} from "./seedService.js";
 dotenv.config();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const gpt_model = 'gpt-3.5-turbo-1106';
+const gpt_model = process.env.OPENAI_MODEL;
 const max_tokens = 1024;
 const generateQuizQuestions = async (interests, numberOfQuestions) => {
     const generatedSeed = await generateUniqueSeed();
