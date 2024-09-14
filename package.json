@@ -7,6 +7,7 @@
   "scripts": {
     "test": "vitest",
     "dev": "nodemon -r dotenv/config ./index.js dotenv_config_path=./.env.production",
+    "build": "webpack",
     "db-introspect": "dotenv -e .env.development -- prisma generate",
     "db-generate": "dotenv -e .env.development -- prisma db pull",
     "db-sync": "dotenv -e .env.tests -- prisma db push"
@@ -33,6 +34,8 @@
     "tiktoken": "^1.0.10",
     "uuid": "^9.0.1",
     "vitest": "^0.34.6",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
     "yamljs": "^0.3.0"
   }
 }
