@@ -8,5 +8,4 @@ import {
 export default (app) => {
     app.get('/quizzes', isAuthenticated, userHistory);
     app.get('/quizzes/:quizId', isAuthenticated, quizHistory);
-    app.patch('/quizzes/:quizId', isAuthenticated, deleteHistory);
 };

@@ -115,19 +115,4 @@ const quizHistory = async (req, res) => {
     }
 };
 
-const deleteHistory = async (req, res) => {
-    const {user: {id: user_id}} = req.user;
-    try {
-        const quiz = await prisma.quizzes.delete({
-            where: {id: req.params.quizId, user_id}
-        });
-        if (!quiz) {
-            return res.status(404).json({error: 'Quiz not found'});
-        }
-        res.json(quiz);
-    } catch (error) {
-        res.status(500).json({message: 'You are trying to access other users data', error: error.message})
-    }
-};
-
-export {userHistory, quizHistory, deleteHistory};
+export {userHistory, quizHistory};
