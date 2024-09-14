@@ -13,6 +13,3 @@ lmao.js
 .env.development
 bun.lockb
 .env.tests
-
-# build
-build
