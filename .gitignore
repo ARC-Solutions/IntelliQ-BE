@@ -1,15 +1,26 @@
+# IDE
+.idea
+.vscode
+*.iws
+*.iml
+*.ipr
+/out/
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
 # misc
-.env.production
 .DS_Store
-.env.production
-.env.development.local
-.env.test.local
-.env.production.local
 encodeURIComponent.js
 encodeURIComponent.ts
 aaaaaaaaaa.cjs
-node_modules
 lmao.js
-.env.development
+package-lock.json
 bun.lockb
-.env.tests
+
+# local env files
+.env*.local
+.env.*
+*.env
