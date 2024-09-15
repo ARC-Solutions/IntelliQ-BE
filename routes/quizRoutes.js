@@ -1,9 +1,4 @@
-import {
-    welcome,
-    getQuiz,
-    getQuizVideo,
-    saveQuizResults, getBlanksQuiz
-} from '../controllers/quizController.js';
+import {getQuiz, saveQuizResults, welcome} from '../controllers/quizController.js';
 import {isAuthenticated} from "../middlewares/isAuthenticated.js";
 
 export default (app) => {

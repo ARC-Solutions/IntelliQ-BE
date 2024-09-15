@@ -1,4 +1,4 @@
-import {generateBlanksQuiz, generateQuizQuestions, generateQuizVideo} from "../services/quizService.js";
+import {generateQuizQuestions} from "../services/quizService.js";
 import {prisma} from "../config/prismaClient.js";
 
 const welcome = async (req, res) => {
