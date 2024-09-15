@@ -38,7 +38,7 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
     const openai = new OpenAI(OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
         model: gpt_model,
-        response_format: { type: 'json_object'},
+        response_format: {type: 'json_object'},
         messages: [{
             'role': 'system',
             'content': prompt
@@ -54,8 +54,8 @@ export const generateQuizQuestions = async (interests, numberOfQuestions) => {
         seed: generatedSeed
     });
     const rawContent = response.choices[0].message.content;
-    const { usage } = response;
-    const { system_fingerprint } = response;
+    const {usage} = response;
+    const {system_fingerprint} = response;
     // console.log('rawContent:', JSON.stringify(rawContent, null, 2));
 
     const questionStrings = rawContent.split('\n\n');
