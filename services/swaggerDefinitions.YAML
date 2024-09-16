@@ -493,10 +493,6 @@ paths:
                   properties:
                     quizTitle:
                       type: string
-                    quizTopics:
-                      type: array
-                      items:
-                        type: string
                     questions:
                       type: array
                       items:
@@ -618,10 +614,6 @@ paths:
                           type: string
                   totalCount:
                     type: integer
-                  topFiveTopics:
-                    type: array
-                    items:
-                      type: string
         '400':
           description: Invalid question format
           content:
