@@ -38,17 +38,26 @@ const saveQuizResults = async (req, res) => {
 
     try {
         const {rawQuestions} = req.body;
-        let {quizTitle, questions, timeTaken, quizTopics} = rawQuestions;
-        quizTopics = quizTopics[0].split(',').map(topic => topic.trim());
+        let {quizTitle, questions, timeTaken} = rawQuestions;
+        // let {quizTitle, questions, timeTaken, quizTopics} = rawQuestions;
+        // quizTopics = quizTopics[0].split(',').map(topic => topic.trim());
         // console.log(quizTopics)
 
+        // const createdQuiz = await prisma.quizzes.create({
+        //     data: {
+        //         user_id: user_id,
+        //         quiz_title: quizTitle,
+        //         total_time_taken: timeTaken,
+        //         correct_answers_count: 0,
+        //         topics: quizTopics
+        //     }
+        // });
         const createdQuiz = await prisma.quizzes.create({
             data: {
                 user_id: user_id,
                 quiz_title: quizTitle,
                 total_time_taken: timeTaken,
                 correct_answers_count: 0,
-                topics: quizTopics
             }
         });
 
@@ -89,7 +98,6 @@ const saveQuizResults = async (req, res) => {
                 quiz_title: quizTitle,
                 timeTaken,
                 correctAnswersCount,
-                quizTopics,
                 questions: questions.map(question => ({
                     text: question.text,
                     correctAnswer: question.correctAnswer,

@@ -26,48 +26,48 @@ const userHistory = async (req, res) => {
             created_at: formatDate(quiz.created_at)
         }));
 
-        const allQuizzes = await prisma.quizzes.findMany({
-            where: {user_id},
-            select: {
-                topics: true // Include topics in the selection
-            }
-        });
+        // const allQuizzes = await prisma.quizzes.findMany({
+        //     where: {user_id},
+        //     select: {
+        //         topics: true // Include topics in the selection
+        //     }
+        // });
 
         // Fisher-Yates (Knuth) shuffle algorithm
-        const shuffleArray = (array) => {
-            for(let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
+        // const shuffleArray = (array) => {
+        //     for(let i = array.length - 1; i > 0; i--) {
+        //         const j = Math.floor(Math.random() * (i + 1));
+        //         [array[i], array[j]] = [array[j], array[i]];
+        //     }
+        // }
 
         // extract topics and flatten the array
-        const topics = allQuizzes.flatMap(quiz => quiz.topics.map(topic => topic.toLowerCase()));
+        // const topics = allQuizzes.flatMap(quiz => quiz.topics.map(topic => topic.toLowerCase()));
 
         // count the occurrence of each topic
-        const topicCounts = topics.reduce((counts, topic) => {
-            counts[topic] = (counts[topic] || 0) + 1;
-            return counts;
-        }, {});
+        // const topicCounts = topics.reduce((counts, topic) => {
+        //     counts[topic] = (counts[topic] || 0) + 1;
+        //     return counts;
+        // }, {});
 
         // sort the topics by their occurrence count in descending order
-        const sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+        // const sortedTopics = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
 
         // Log the top five topics along with their occurrence count
         // const topFiveTopicsWithCount = sortedTopics.slice(0, 5).map(topic => `${topic[0]} x${topic[1]}`);
         // console.log(topFiveTopicsWithCount); // Log the top five topics
 
         // return the top five topics without their occurrence count
-        const topFiveTopics = sortedTopics.slice(0, 5).map(topic => ({
-            name: topic[0].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' '),
-            topic_frequency: topic[1]
-        }));
+        // const topFiveTopics = sortedTopics.slice(0, 5).map(topic => ({
+        //     name: topic[0].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' '),
+        //     topic_frequency: topic[1]
+        // }));
 
-        const totalCount = await prisma.quizzes.count({where: {user_id}});
-        shuffleArray(topFiveTopics)
-        console.log(topFiveTopics);
+        // const totalCount = await prisma.quizzes.count({where: {user_id}});
+        // shuffleArray(topFiveTopics)
+        // console.log(topFiveTopics);
 
-        res.json({quizzes: formattedQuizzes, totalCount, topFiveTopics});
+        res.json({quizzes: formattedQuizzes});
     } catch (error) {
         res.status(500).json({error: error.message});
     }
