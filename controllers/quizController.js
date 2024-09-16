@@ -109,7 +109,7 @@ const saveQuizResults = async (req, res) => {
         res.status(201).json(formattedResponse);
     } catch (error) {
         console.error('Error saving quiz data:', error);
-        res.status(500).json({error: 'An error occurred while saving quiz data.'});
+        res.status(500).json({message: 'An error occurred while saving quiz data.', error: error});
     }
 };
 
