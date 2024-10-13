@@ -9,7 +9,7 @@
     "db-introspect": "dotenv -e .env.development -- prisma generate",
     "db-generate": "dotenv -e .env.development -- prisma db pull",
     "db-sync": "dotenv -e .env.tests -- prisma db push",
-    "build": "node ./index.js"
+    "start": "node ./index.js"
   },
   "type": "module",
   "license": "ISC",
