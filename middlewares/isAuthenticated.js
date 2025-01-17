@@ -2,7 +2,7 @@ import { supabase } from "../config/db.js";
 
 export const isAuthenticated = async (req, res, next) => {
     // Read from Authorization header
-    const headerToken = req.headers['authorization']?.split(' ')[1];
+    const headerToken = req.headers['Authorization']?.split(' ')[1];
 
     // Read from cookies
     const cookieToken = req.cookies?.token;
