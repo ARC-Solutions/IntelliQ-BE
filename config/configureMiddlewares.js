@@ -18,9 +18,6 @@ export const configureMiddlewares = (app) => {
               "https://www.intelliq.dev",
               "https://www.beta.intelliq.dev",
               "https://www.internal.intelliq.dev",
-              "https://intelliq-be-s1.azurewebsites.net",
-              "https://intelliq-be-s2.azurewebsites.net",
-              "https://intelliq-be-s3.azurewebsites.net",
               "https://api.old.intelliq.dev",
             ];
             if (!origin || allowedOrigins.indexOf(origin) !== -1) {

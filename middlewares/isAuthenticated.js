@@ -12,14 +12,31 @@ export const isAuthenticated = async (req, res, next) => {
   const token = headerToken || cookieToken;
   // console.log(token);
   if (!token) {
-    return res.status(401).json({ error: "Not authorized" });
+    return res.status(401).json({ error: "No token provided" });
   }
 
-  const { data: user, error } = await supabase.auth.getUser(token);
-  if (error || !user) {
-    return res.status(401).json({ error: "Not authorized" });
-  }
+  try {
+    const { data: user, error } = await supabase.auth.getUser(token);
 
-  req.user = user;
-  next();
+    if (error) {
+      console.error("Supabase Auth Error:", error);
+      return res.status(401).json({
+        error: "Token validation failed",
+        details: error.message,
+      });
+    }
+
+    if (!user) {
+      return res.status(401).json({ error: "No user found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return res.status(401).json({
+      error: "Authentication failed",
+      details: error.message,
+    });
+  }
 };
